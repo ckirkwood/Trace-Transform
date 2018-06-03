@@ -29,23 +29,23 @@ def readPots():
     threshold = 0.05
 
     last_value_1 = (((pot1.value - 0) * (255 - 0)) / (1 - 0)) + 0
-    last_valu_2 = (((pot2.value - 0) * (255 - 0)) / (1 - 0)) + 0
-    last_valu_3e = (((pot3.value - 0) * (255 - 0)) / (1 - 0)) + 0
+    last_value_2 = (((pot2.value - 0) * (255 - 0)) / (1 - 0)) + 0
+    last_value_3 = (((pot3.value - 0) * (255 - 0)) / (1 - 0)) + 0
 
     while True:
 
-        new_value_1= (((pot1.value - 0) * (255 - 0)) / (1 - 0)) + 0
-        if abs((last_value_1 - new_value_1) / new_value)_1 > threshold:
+        new_value_1 = (((pot1.value - 0) * (255 - 0)) / (1 - 0)) + 0
+        if abs((last_value_1 - new_value_1) / new_value_1) > threshold:
             message1 = '{:.0f}'.format(new_value_1)
-            send_osc('/pot1', message1)
+            send_osc('/pot1', int(message1))
 	    print('pot1 = ', message1)
         else:
             sleep(0.05)
 
-        new_value_2= (((pot2.value - 0) * (255 - 0)) / (1 - 0)) + 0
-        if abs((last_value_2 - new_value_2 / new_value_2 > threshold:
+        new_value_2 = (((pot2.value - 0) * (255 - 0)) / (1 - 0)) + 0
+        if abs((last_value_2 - new_value_2) / new_value_2) > threshold:
             message2 = '{:.0f}'.format(new_value_2)
-            send_osc('/pot2', message2)
+            send_osc('/pot2', int(message2))
             print('pot2 = ', message2)
         else:
             sleep(0.05)
@@ -53,7 +53,7 @@ def readPots():
         new_value_3 = (((pot3.value - 0) * (255 - 0)) / (1 - 0)) + 0
         if abs((last_value_3 - new_value_3) / new_value_3) > threshold:
             message3 = '{:.0f}'.format(new_value_3)
-            send_osc('/pot3', message3)
+            send_osc('/pot3', int(message3))
             print('pot3 = ', message3)
         else:
             sleep(0.05)
@@ -65,5 +65,5 @@ send_address = (client_ip, 8000)
 c = OSCClient()
 c.connect(send_address)
 
-while True:
-    readPots()
+
+readPots()
