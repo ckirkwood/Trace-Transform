@@ -5,8 +5,6 @@ from gpiozero import Button, MCP3008
 from signal import pause
 
 
-
-
 server_ip = '192.168.1.107'
 client_ip = '192.168.1.104'
 
@@ -27,8 +25,8 @@ def send_pots():
     pot2 = MCP3008(channel=1)
     pot3 = MCP3008(channel=2)
     pots = [pot1.value, pot2.value, pot3.value]
-    send_osc('/pots', pots)
-    print(pots)
+    send_osc('/pot1', pot1.value)
+    print(pot1.value)
 
 # assign server ip and port
 server = OSCServer((server_ip, 9090))
