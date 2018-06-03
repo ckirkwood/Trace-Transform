@@ -32,7 +32,12 @@ def readPots(i):
         new_value = (((pot.value - 0) * (255 - 0)) / (1 - 0)) + 0
         if abs((last_value - new_value) / new_value) > threshold:
             message = '{:.0f}'.format(new_value)
-            send_osc('/pot' + i, pot.value)
+            if i = 0:
+                send_osc('/pot1', pot.value)
+            elif i = 1:
+                send_osc('/pot2', pot.value)
+            elif i = 2:
+                send_osc('/pot3', pot.value)
             last_value = new_value
             return message
         else:
