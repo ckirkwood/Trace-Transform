@@ -22,24 +22,39 @@ def oscInput(addr, tags, stuff, source):
   print addr, stuff, source
 
 # pot listener courtsey of Maxmillian Peters - https://stackoverflow.com/questions/37897483/how-to-display-a-changing-value-python
-def readPots(i):
-    pot = MCP3008(channel=i, device=0)
+def readPots():
+    pot1 = MCP3008(channel=0, device=0)
+    pot2 = MCP3008(channel=1, device=0)    
+    pot3 = MCP3008(channel=2, device=0)
     threshold = 0.05
 
-    last_value = (((pot.value - 0) * (255 - 0)) / (1 - 0)) + 0
+    1_last_value = (((pot1.value - 0) * (255 - 0)) / (1 - 0)) + 0
+    2_last_value = (((pot2.value - 0) * (255 - 0)) / (1 - 0)) + 0
+    3_last_value = (((pot3.value - 0) * (255 - 0)) / (1 - 0)) + 0
 
     while True:
-        new_value = (((pot.value - 0) * (255 - 0)) / (1 - 0)) + 0
-        if abs((last_value - new_value) / new_value) > threshold:
-            message = '{:.0f}'.format(new_value)
-            if i = 0:
-                send_osc('/pot1', pot.value)
-            elif i = 1:
-                send_osc('/pot2', pot.value)
-            elif i = 2:
-                send_osc('/pot3', pot.value)
-            last_value = new_value
-            return message
+
+        1_new_value = (((pot1.value - 0) * (255 - 0)) / (1 - 0)) + 0
+        if abs((1_last_value - 1_new_value) / 1_new_value) > threshold:
+            message1 = '{:.0f}'.format(1_new_value)
+            send_osc('/pot1', message1)
+	    print('pot1 = ', message1)
+        else:
+            sleep(0.05)
+
+        2_new_value = (((pot2.value - 0) * (255 - 0)) / (1 - 0)) + 0
+        if abs((2_last_value - 2_new_value) / 2_new_value) > threshold:
+            message2 = '{:.0f}'.format(2_new_value)
+            send_osc('/pot2', message2)
+            print('pot2 = ', message2)
+        else:
+            sleep(0.05)
+
+        3_new_value = (((pot3.value - 0) * (255 - 0)) / (1 - 0)) + 0
+        if abs((3_last_value - 3_new_value) / 3_new_value) > threshold:
+            message3 = '{:.0f}'.format(3_new_value)
+            send_osc('/pot3', message3)
+            print('pot3 = ', message3)
         else:
             sleep(0.05)
 
@@ -50,13 +65,5 @@ send_address = (client_ip, 8000)
 c = OSCClient()
 c.connect(send_address)
 
-# start thread
-server_thread = Thread(target=server.serve_forever)
-server_thread.daemon = True
-server_thread.start()
-
 while True:
-    one = readPots(0)
-    two = readPots(1)
-    three = readPots(2)
-    print(one, two, three)
+    readPots()
