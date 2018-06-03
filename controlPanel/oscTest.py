@@ -59,14 +59,6 @@ send_address = (client_ip, 8000)
 c = OSCClient()
 c.connect(send_address)
 
-# add message handlers - assign functions to incoming message addresses
-server.addMsgHandler("/rgb", rgb)
-server.addMsgHandler("/hsv", hsv)
-server.addMsgHandler("/beat", beat)
-server.addMsgHandler("/count", loop_counter)
-server.addMsgHandler("/clear_counter", clear_counter)
-server.addMsgHandler("/clear_all", clear_all)
-
 # start thread
 server_thread = Thread(target=server.serve_forever)
 server_thread.daemon = True
@@ -86,7 +78,7 @@ try: # send message only when switch status changes
 
     pause()
 
-  
+
 except KeyboardInterrupt:
     print 'losing...' # makes use of the '^C' following keyboard interrupt
     server.close()
