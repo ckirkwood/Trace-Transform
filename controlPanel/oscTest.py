@@ -1,15 +1,11 @@
 from OSC import OSCServer, OSCClient, OSCMessage
 from time import sleep
 from threading import Thread
-from gpiozero import Button
-import Adafruit_MCP3008
+from gpiozero import Button, MCP3008
 from signal import pause
 
-CLK = 11
-MISO = 9
-MOSI = 10
-CS = 8
-mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
+
+
 
 server_ip = '192.168.1.107'
 client_ip = '192.168.1.104'
@@ -27,10 +23,10 @@ def oscInput(addr, tags, stuff, source):
   print addr, stuff, source
 
 def send_pots():
-    pot1 = mcp.read_adc(0)
-    pot2 = mcp.read_adc(1)
-    pot3 = mcp.read_adc=(2)
-    pots = [pot1, pot2, pot3]
+    pot1 = MCP3008(channel=0)
+    pot2 = MCP3008(channel=1)
+    pot3 = MCP3008(channel=2)
+    pots = [pot1.value, pot2.value, pot3.value]
     send_osc('/pots', pots)
     print(pots)
 
@@ -48,5 +44,3 @@ server_thread.start()
 
 while True:
     send_pots()
-
-
