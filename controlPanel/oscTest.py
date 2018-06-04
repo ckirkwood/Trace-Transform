@@ -6,6 +6,8 @@ from gpiozero import Button, MCP3008
 server_ip = '192.168.1.107'
 client_ip = '192.168.1.104'
 
+button = Button(19)
+
 # function to send message with multiple values
 def send_osc(addr, *stuff):
     msg = OSCMessage()
@@ -29,6 +31,9 @@ c.connect(send_address)
 pot1_last_read = 0
 pot2_last_read = 0
 pot3_last_read = 0
+pot4_last_read = 0
+pot5_last_read = 0
+pot6_last_read = 0
 tolerance = 5
 
 while True:
@@ -39,6 +44,9 @@ while True:
     pot1_changed = False
     pot2_changed = False
     pot3_changed = False
+    pot4_changed = False
+    pot5_changed = False
+    pot6_changed = False
 
     one = int(pot1.value * 255)
     two = int(pot2.value * 255)
@@ -54,18 +62,36 @@ while True:
         pot2_changed = True
     if pot3_movement > tolerance:
         pot3_changed = True
+    if pot1_movement > tolerance and button.is_pressed == True:
+        pot4_changed = True
+    if pot2_movement > tolerance and button.is_pressed == True:
+        pot5_changed = True
+    if pot3_movement > tolerance and button.is_pressed == True:
+        pot6_changed = True
 
-    if pot1_changed == True:
+    if pot1_changed == True and button.is_pressed == False:
         print('Pot1: ', one)
         send_osc('/pot1', one)
         pot1_last_read = one
-    if pot2_changed == True:
+    if pot2_changed == True and button.is_pressed == False:
         print('Pot2: ', two)
         send_osc('/pot2', two)
         pot2_last_read = two
-    if pot3_changed == True:
+    if pot3_changed == True and button.is_pressed == False:
         print('Pot3: ', three)
         send_osc('/pot3', three)
         pot3_last_read = three
+    if pot1_changed == True and button.is_pressed == True:
+        print('Pot4: ', one)
+        send_osc('/pot4', one)
+        pot4_last_read = one
+    if pot2_changed == True and button.is_pressed == True:
+        print('Pot5: ', two)
+        send_osc('/pot5', two)
+        pot5_last_read = two
+    if pot3_changed == True and button.is_pressed == True:
+        print('Pot6: ', three)
+        send_osc('/pot6', three)
+        pot6_last_read = three
 
 sleep(0.1)
