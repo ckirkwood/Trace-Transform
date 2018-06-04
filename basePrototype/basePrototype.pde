@@ -9,6 +9,9 @@ PImage bulb;
 int pot1;
 int pot2; 
 int pot3;
+int pot4;
+int pot5; 
+int pot6;
 
 int lastRead2;
 int lastRead3;
@@ -54,6 +57,12 @@ void oscEvent(OscMessage theOscMessage) {
     pot2 = value;
   } else if (theOscMessage.checkAddrPattern("/pot3")) {
     pot3 = value;
+  } else if (theOscMessage.checkAddrPattern("/pot4")) {
+    pot4 = value;
+  } else if (theOscMessage.checkAddrPattern("/pot5")) {
+    pot5 = value;
+  } else if (theOscMessage.checkAddrPattern("/pot6")) {
+    pot6 = value;
   }
 }
 
