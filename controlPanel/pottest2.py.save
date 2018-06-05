@@ -1,0 +1,40 @@
+from time import sleep
+from gpiozero import MCP3008
+
+    pot1 = MCP3008(channel=0, device=0)
+    pot2 = MCP3008(channel=1, device=0)
+    pot3 = MCP3008(channel=2, device=0)
+    threshold = 0.05
+
+    last_value_1 = (((pot1.value - 0) * (255 - 0)) / (1 - 0)) + 0
+    last_value_2 = (((pot2.value - 0) * (255 - 0)) / (1 - 0)) + 0
+    last_value_3 = (((pot3.value - 0) * (255 - 0)) / (1 - 0)) + 0
+
+    while True:
+
+        new_value_1 = (((pot1.value - 0) * (255 - 0)) / (1 - 0)) + 0
+        new_value_2 = (((pot2.value - 0) * (255 - 0)) / (1 - 0)) + 0
+        new_value_3 = (((pot3.value - 0) * (255 - 0)) / (1 - 0)) + 0
+
+
+        if abs((last_value_1 - new_value_1) / new_value_1) > threshold:
+            message1 = '{:.0f}'.format(new_value_1)
+        #    send_osc('/pot1', int(message1))
+            print('pot1 = ', message1)
+
+        elif abs((last_value_2 - new_value_2) / new_value_2) > threshold:
+            message2 = '{:.0f}'.format(new_value_2)
+         #   send_osc('/pot2', int(message2))
+            print('pot2 = ', message2)
+
+        elif abs((last_value_3 - new_value_3) / new_value_3) > threshold:
+            message3 = '{:.0f}'.format(new_value_3)
+          #  send_osc('/pot3', int(message3))
+            print('pot3 = ', message3)
+
+        else:
+            sleep(0.05)
+
+
+readPots()
+

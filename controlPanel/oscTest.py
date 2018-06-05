@@ -1,12 +1,17 @@
+#!/usr/bin/env python
+
 from OSC import OSCServer, OSCClient, OSCMessage
 from time import sleep
-from gpiozero import Button, MCP3008
+from gpiozero import Button, MCP3008, LED
 
 
 server_ip = '192.168.1.107'
 client_ip = '192.168.1.104'
 
 button = Button(19)
+red = LED(13)
+green = LED(12)
+yellow = LED(6)
 
 # function to send message with multiple values
 def send_osc(addr, *stuff):
@@ -20,12 +25,35 @@ def send_osc(addr, *stuff):
 def oscInput(addr, tags, stuff, source):
   print addr, stuff, source
 
-# assign server ip and port
 server = OSCServer((server_ip, 9090))
 send_address = (client_ip, 8000)
-
 c = OSCClient()
 c.connect(send_address)
+
+
+def test_ping():
+    green.off()
+    red.off()
+    yellow.on()
+    for i in range(10):
+        send_osc('/test', 'ping')
+        sleep(0.5)
+
+
+while True:
+    try:
+        test_ping()
+    except Exception as e:
+        yellow.off()
+        for i in range(10, -1, -1):
+            print 'Client not found, trying connection again in ' + str(i) + ' seconds'
+            red.on()
+            sleep(0.5)
+            red.off()
+            sleep(0.5)
+        print 'Trying connection again...'
+        continue
+    break
 
 
 pot1_last_read = 0
@@ -37,6 +65,9 @@ pot6_last_read = 0
 tolerance = 5
 
 while True:
+    yellow.off()
+    green.on()
+
     pot1 = MCP3008(channel=0, device=0)
     pot2 = MCP3008(channel=1, device=0)
     pot3 = MCP3008(channel=2, device=0)
@@ -94,4 +125,4 @@ while True:
         send_osc('/pot6', three)
         pot6_last_read = three
 
-sleep(0.1)
+    sleep(0.1)
