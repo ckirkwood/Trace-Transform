@@ -30,11 +30,11 @@ send_address = (client_ip, 8000)
 c = OSCClient()
 c.connect(send_address)
 
-
 def test_ping():
     green.off()
     red.off()
     yellow.on()
+    sleep(0.5)
     for i in range(10):
         send_osc('/test', 'ping')
         sleep(0.5)
@@ -45,7 +45,7 @@ while True:
         test_ping()
     except Exception as e:
         yellow.off()
-        for i in range(10, -1, -1):
+        for i in range(10, 0, -1):
             print 'Client not found, trying connection again in ' + str(i) + ' seconds'
             red.on()
             sleep(0.5)
