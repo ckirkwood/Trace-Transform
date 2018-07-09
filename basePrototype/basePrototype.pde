@@ -15,6 +15,7 @@ int pot6;
 
 int lastRead2;
 int lastRead3;
+int lastRead4;
 
 float x, y, w, h;
 float rot;
@@ -38,13 +39,16 @@ void setup() {
 void draw() {
   background(0);
   
-  dimmer();
+  
+  colour();
   rotateBulb();
   
   imageMode(CENTER);
   image(bulb, x, y, w, h);
   
+  blur();
   embiggen();
+  
 
 }
 
@@ -66,8 +70,8 @@ void oscEvent(OscMessage theOscMessage) {
   }
 }
 
-void dimmer() {
-  tint(pot1);
+void blur() {
+  filter(BLUR, (pot1/25.5));
 }
 
 void rotateBulb() {
@@ -97,3 +101,9 @@ void embiggen() {
     lastRead2 = pot2;
   }
 }
+
+void colour(){
+  tint(pot4, pot5, pot6);  
+}
+  
+  
