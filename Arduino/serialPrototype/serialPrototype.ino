@@ -28,8 +28,8 @@ void setup() {
     while (1); // halt!
   }
 
-  establishContact();  
-  
+  establishContact();
+
   // thanks PhilB for this gamma table!
   // it helps convert RGB colors to what humans see
   for (int i=0; i<256; i++) {
@@ -48,10 +48,10 @@ void setup() {
 void loop() {
   uint16_t clear, red, green, blue;
   tcs.setInterrupt(false);      // turn on LED
-  delay(60);  // takes 50ms to read 
+  delay(60);  // takes 50ms to read
   tcs.getRawData(&red, &green, &blue, &clear);
   tcs.setInterrupt(true);  // turn off LED
-  
+
   // Figure out some basic hex code for visualization
   uint32_t sum = clear;
   float r, g, b;
@@ -60,7 +60,7 @@ void loop() {
   b = blue; b /= sum;
   r *= 256; g *= 256; b *= 256;
   //Serial.print("\t");
-  //Serial.print((int)r, HEX); Serial.print((int)g, HEX); Serial.print((int)b, HEX); 
+  //Serial.print((int)r, HEX); Serial.print((int)g, HEX); Serial.print((int)b, HEX);
   //Serial.print("\n");
   //Serial.print((int)r ); Serial.print(" "); Serial.print((int)g);Serial.print(" ");  Serial.println((int)b );
  // Serial.print("C:\t"); Serial.print(clear);
@@ -85,19 +85,19 @@ void loop() {
 // Calculating the distance
   distance = duration*0.034/2;
 
- 
+
 
   if (Serial.available() > 0) {
     // get incoming byte:
     inByte = Serial.read();
 
-    
+
     Serial.write(round(r));
     Serial.write(round(g));
     Serial.write(round(b));
     Serial.write(distance);
 
-    
+
  }
 }
 
@@ -107,7 +107,3 @@ void establishContact() {
  delay(300);
  }
 }
-
-
-
-
