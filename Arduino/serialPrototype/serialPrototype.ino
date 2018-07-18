@@ -4,8 +4,8 @@
 
 #define commonAnode true
 
-const int trigPin = 9;
-const int echoPin = 10;
+const int trigPin = 11;
+const int echoPin = 12;
 
 long duration;
 int distance;
@@ -16,6 +16,7 @@ int inByte = 0;   // incoming serial byte
 byte gammatable[256];
 
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
+
 
 void setup() {
   Serial.begin(9600);

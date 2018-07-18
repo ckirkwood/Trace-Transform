@@ -1,4 +1,22 @@
-import processing.serial.*;
+import processing.core.*; 
+import processing.data.*; 
+import processing.event.*; 
+import processing.opengl.*; 
+
+import processing.serial.*; 
+
+import java.util.HashMap; 
+import java.util.ArrayList; 
+import java.io.File; 
+import java.io.BufferedReader; 
+import java.io.PrintWriter; 
+import java.io.InputStream; 
+import java.io.OutputStream; 
+import java.io.IOException; 
+
+public class serial_multiInput extends PApplet {
+
+
 
 int[] serialInArray = new int[4]; // Where we'll put what we receive
 int serialCount = 0;     // A count of how many bytes we receive
@@ -10,22 +28,22 @@ Serial myPort;
 
 boolean firstContact = false;  // Whether we've heard from the microcontroller
 
-void setup() {
- size(400, 400); // Stage size
+public void setup() {
+  // Stage size
  noStroke();  // No border on the next thing drawn
 
  String portName = Serial.list()[1];
  myPort = new Serial(this, portName, 9600);
 }
 
-void draw() {
+public void draw() {
   background(0);
   ellipse (width/2, height/2, distance, distance);
   fill(red, green, blue);
 
 }
 
-void serialEvent(Serial myPort) {
+public void serialEvent(Serial myPort) {
  // read a byte from the serial port:
  int inByte = myPort.read();
  // if this is the first byte received, and it's an A,
@@ -59,4 +77,14 @@ void serialEvent(Serial myPort) {
   serialCount = 0;
  }
  }
+}
+  public void settings() {  size(400, 400); }
+  static public void main(String[] passedArgs) {
+    String[] appletArgs = new String[] { "serial_multiInput" };
+    if (passedArgs != null) {
+      PApplet.main(concat(appletArgs, passedArgs));
+    } else {
+      PApplet.main(appletArgs);
+    }
+  }
 }
