@@ -1,14 +1,83 @@
-void setup(){
-  Serial.begin(9600);
+#include <Wire.h>
+#include "Adafruit_TCS34725.h"
+#include <math.h>
+
+Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
+
+const int leftButton = 7; 
+const int rightButton = 8; 
+const int leftTrigger = 9;
+const int leftEcho = 10;
+const int rightTrigger = 12;
+const int rightEcho = 13;
+
+
+void setup() {
+  Serial.begin(115200);
+
+  if (tcs.begin()) {
+    Serial.println("Found RGB sensor");
+  } else {
+    Serial.println("No TCS34725 found ... check your connections");
+    while (1); // halt!
+  }
+
+  pinMode(leftButton, INPUT_PULLUP);
+  pinMode(rightButton, INPUT_PULLUP);
+  pinMode(leftTrigger, OUTPUT);
+  pinMode(leftEcho, INPUT); 
+  pinMode(rightTrigger, OUTPUT);
+  pinMode(rightEcho, INPUT); 
 }
+ 
 
 void loop() {
+  //ANALOGUE INPUTS
   int ldr = LDR();
   int leftPot = pot1();
   int rightPot = pot2();
+
+  // ULTRASONIC DISTANCE SENSORS
+  int leftD = leftDistance();
+  int rightD = rightDistance();
+
+  // ARCADE BUTTONS
+  int leftB = button1();
+  int rightB = button2();
+
+  // MOTION SENSOR
+  int pir = motion();
   
-  Serial.print(ldr); Serial.print(", "); Serial.print(leftPot); Serial.print(", "); Serial.println(rightPot); 
+  // RGB COLOUR SENSOR
+  uint16_t clear, red, green, blue;
+
+  tcs.setInterrupt(false);      // turn on LED
+  delay(60);  // takes 50ms to read 
+  tcs.getRawData(&red, &green, &blue, &clear);
+  tcs.setInterrupt(true);  // turn off LED
+  
+  // Calibrate values
+  uint32_t sum = clear;
+  float r, g, b;
+  r = red; r /= sum;
+  g = green; g /= sum;
+  b = blue; b /= sum;
+  r *= 256; g *= 256; b *= 256;
+
+
+  Serial.print(leftB); Serial.print(", ");
+  //Serial.print(rightB); Serial.print(", "); // CHECK WIRING OR CHANGE PIN
+  Serial.print(ldr); Serial.print(", ");
+  Serial.print(leftPot); Serial.print(", ");
+  Serial.print(rightPot); Serial.print(", ");
+  Serial.print(round(r)); Serial.print(", ");
+  Serial.print(round(g)); Serial.print(", ");
+  Serial.print(round(b)); Serial.print(", ");
+  Serial.print(leftD); Serial.print(", ");
+  Serial.print(rightD); Serial.print(", ");
+  Serial.println(pir);
 }
+
 
 int LDR(){
   int i;
@@ -26,7 +95,7 @@ int LDR(){
 int pot1(){
   int i;
   int sval = 0;
-
+  
   for (i = 0; i < 5; i++){
     sval = sval + analogRead(1);    // sensor on analog pin 0
   }
@@ -48,3 +117,74 @@ int pot2(){
   sval = sval / 4;    // scale to 8 bits (0 - 255)
   return sval;
 }
+
+int leftDistance() {
+  long duration;
+  int distance;
+  
+  digitalWrite(leftTrigger, LOW);
+  delayMicroseconds(2);
+  digitalWrite(leftTrigger, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(leftTrigger, LOW);
+
+  duration = pulseIn(leftEcho, HIGH);
+  distance = duration*0.034/2;
+
+  return distance;
+}
+
+int rightDistance() {
+  long duration;
+  int distance;
+  
+  digitalWrite(rightTrigger, LOW);
+  delayMicroseconds(2);
+  digitalWrite(rightTrigger, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(rightTrigger, LOW);
+
+  duration = pulseIn(rightEcho, HIGH);
+  distance = duration*0.034/2;
+
+  return distance;
+}
+
+int button1() {
+  int buttonState = 0;
+  buttonState = digitalRead(leftButton);
+  return !buttonState;
+}
+
+int button2() {
+  int buttonState = 0;
+  buttonState = digitalRead(rightButton);
+  return !buttonState;
+}
+
+int motion() {
+  int inputPin = 2;
+  int pirState = LOW;
+  int val = 0;
+
+  val = digitalRead(inputPin);
+  if (val == HIGH) {
+    int m = 1;
+    return m;
+    if (pirState == LOW) {
+      pirState = HIGH;
+    } else {
+      if (pirState == HIGH) {
+        pirState = LOW;
+      }
+    }
+  } else {
+     int m = 0;
+     return m;
+  }
+  
+}
+
+
+
+
