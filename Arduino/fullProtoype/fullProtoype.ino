@@ -4,22 +4,25 @@
 
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 
-const int leftButton = 7; 
-const int rightButton = 8; 
+const int leftButton = 3; 
+const int rightButton = 4; 
 const int leftTrigger = 9;
 const int leftEcho = 10;
 const int rightTrigger = 12;
 const int rightEcho = 13;
 
+//int inByte = 0; 
+
 
 void setup() {
   Serial.begin(115200);
+  //establishContact();
 
-  if (tcs.begin()) {
-    Serial.println("Found RGB sensor");
+   if (tcs.begin()) {
+    Serial.println("1");
   } else {
-    Serial.println("No TCS34725 found ... check your connections");
-    while (1); // halt!
+    Serial.println("0");
+    while (1); 
   }
 
   pinMode(leftButton, INPUT_PULLUP);
@@ -64,19 +67,24 @@ void loop() {
   b = blue; b /= sum;
   r *= 256; g *= 256; b *= 256;
 
+ // if (Serial.available() > 0) {
+  //  inByte = Serial.read();
 
-  Serial.print(leftB); Serial.print(", ");
-  //Serial.print(rightB); Serial.print(", "); // CHECK WIRING OR CHANGE PIN
-  Serial.print(ldr); Serial.print(", ");
-  Serial.print(leftPot); Serial.print(", ");
-  Serial.print(rightPot); Serial.print(", ");
-  Serial.print(round(r)); Serial.print(", ");
-  Serial.print(round(g)); Serial.print(", ");
-  Serial.print(round(b)); Serial.print(", ");
-  Serial.print(leftD); Serial.print(", ");
-  Serial.print(rightD); Serial.print(", ");
-  Serial.println(pir);
+  Serial.print(leftB); Serial.print(",");
+  Serial.print(rightB); Serial.print(",");
+  Serial.print(ldr); Serial.print(",");
+  Serial.print(leftPot); Serial.print(",");
+  Serial.print(rightPot); Serial.print(",");
+  Serial.print(round(r)); Serial.print(",");
+  Serial.print(round(g)); Serial.print(",");
+  Serial.print(round(b)); Serial.print(",");
+  Serial.print(leftD); Serial.print(",");
+  Serial.print(rightD); Serial.print(",");
+  Serial.print(pir); Serial.print("\n");
+  //}
 }
+
+
 
 
 int LDR(){
@@ -129,7 +137,10 @@ int leftDistance() {
   digitalWrite(leftTrigger, LOW);
 
   duration = pulseIn(leftEcho, HIGH);
-  distance = duration*0.034/2;
+  distance = (duration/2) / 29.1; // convert to cm
+  if (distance > 255) {
+    distance = 255; // cap readings at 255cm
+  }
 
   return distance;
 }
@@ -145,7 +156,10 @@ int rightDistance() {
   digitalWrite(rightTrigger, LOW);
 
   duration = pulseIn(rightEcho, HIGH);
-  distance = duration*0.034/2;
+  distance = (duration/2) / 29.1;
+  if (distance > 255) {
+    distance = 255; // cap readings at 255cm
+  }
 
   return distance;
 }
@@ -169,7 +183,7 @@ int motion() {
 
   val = digitalRead(inputPin);
   if (val == HIGH) {
-    int m = 1;
+    int m = 255;
     return m;
     if (pirState == LOW) {
       pirState = HIGH;
@@ -182,8 +196,14 @@ int motion() {
      int m = 0;
      return m;
   }
-  
 }
+
+/* void establishContact() {
+   while (Serial.available() <= 0) {
+     Serial.print('A'); // send a capital A
+     delay(300);
+   }
+}*/
 
 
 
