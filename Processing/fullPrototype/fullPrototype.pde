@@ -16,14 +16,24 @@ int leftDistance;
 int rightDistance;
 int motion ;
 
+PImage bulb1;
+float x, y, w, h, rotation;
+
 void setup() {
-  size(300, 180);
   myPort = new Serial(this, Serial.list()[1], 115200);
+  size(600,600);
+  bulb1 = loadImage("Trace1.jpg");
+  x = width/2;
+  y = height/2;
+  w = 100;
+  h = 200;
+  rotation = 0.0;
 }
 
 
 void draw() {
   background(0);
+  
   byte[] inBuffer = new byte[11];
 
   while (myPort.available() > 0) {
@@ -50,6 +60,14 @@ void draw() {
       }
     }
   }
+  
+  colour();
+  
+  imageMode(CENTER);
+  image(bulb1, x, y, w, h);
+  
+  blur();
+  carousel();
 
   int x = 20;
   int y = 30;
@@ -64,4 +82,26 @@ void draw() {
   text("Motion: " + motion, x, y+120);
   
 
+}
+
+void colour(){
+  tint(red, green, blue);  
+}
+  
+void blur() {
+  filter(BLUR, (leftPot/25.5));
+}
+
+void carousel() {
+  if (leftButton == 1) {
+    x -=4;
+  } else {
+    x = x;
+  }
+  
+  if (rightButton == 1) {
+    x +=4;
+  } else {
+    x = x;
+  }
 }

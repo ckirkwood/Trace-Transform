@@ -4,19 +4,16 @@
 
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 
-const int leftButton = 3; 
-const int rightButton = 4; 
-const int leftTrigger = 9;
-const int leftEcho = 10;
-const int rightTrigger = 12;
-const int rightEcho = 13;
-
-//int inByte = 0; 
+const int leftButton = 4; 
+const int rightButton = 3; 
+const int leftTrigger = 12;
+const int leftEcho = 13;
+const int rightTrigger = 9;
+const int rightEcho = 10;
 
 
 void setup() {
   Serial.begin(115200);
-  //establishContact();
 
    if (tcs.begin()) {
     Serial.println("1");
@@ -67,9 +64,6 @@ void loop() {
   b = blue; b /= sum;
   r *= 256; g *= 256; b *= 256;
 
- // if (Serial.available() > 0) {
-  //  inByte = Serial.read();
-
   Serial.print(leftB); Serial.print(",");
   Serial.print(rightB); Serial.print(",");
   Serial.print(ldr); Serial.print(",");
@@ -80,10 +74,8 @@ void loop() {
   Serial.print(round(b)); Serial.print(",");
   Serial.print(leftD); Serial.print(",");
   Serial.print(rightD); Serial.print(",");
-  Serial.print(pir); Serial.print("\n");
-  //}
+  Serial.println(pir);
 }
-
 
 
 
@@ -105,7 +97,7 @@ int pot1(){
   int sval = 0;
   
   for (i = 0; i < 5; i++){
-    sval = sval + analogRead(1);    // sensor on analog pin 0
+    sval = sval + analogRead(2);    // sensor on analog pin 0
   }
 
   sval = sval / 5;    // average
@@ -118,7 +110,7 @@ int pot2(){
   int sval = 0;
 
   for (i = 0; i < 5; i++){
-    sval = sval + analogRead(2);    // sensor on analog pin 0
+    sval = sval + analogRead(1);    // sensor on analog pin 0
   }
 
   sval = sval / 5;    // average
@@ -197,13 +189,6 @@ int motion() {
      return m;
   }
 }
-
-/* void establishContact() {
-   while (Serial.available() <= 0) {
-     Serial.print('A'); // send a capital A
-     delay(300);
-   }
-}*/
 
 
 
