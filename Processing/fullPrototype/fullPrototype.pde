@@ -14,7 +14,19 @@ int green;
 int blue;
 int leftDistance;
 int rightDistance;
-int motion ;
+int motion;
+
+int lbLastValue = 0;
+int rbLastValue = 0;
+int ldrLastValue = 0;
+int leftPotLastValue = 0;
+int rightPotLastValue = 0;
+int redLastValue = 0;
+int greenLastValue = 0;
+int blueLastValue = 0;
+int leftDistanceLastValue = 255;
+int rightDistanceLastValue = 255;
+int motionLastValue = 0;
 
 PImage bulb1;
 float x, y, w, h, rotation;
@@ -62,13 +74,16 @@ void draw() {
   }
   
   colour();
+  //rotateBulb();
   
   imageMode(CENTER);
   image(bulb1, x, y, w, h);
   
-  blur();
   carousel();
-
+  blur();
+  shrink();
+  
+ 
   int x = 20;
   int y = 30;
   text("Left Button: " + leftButton, x, y);
@@ -80,10 +95,9 @@ void draw() {
   text("Left Distance: " + leftDistance, x, y+90);
   text("Right Distance: " + rightDistance, x, y+105);
   text("Motion: " + motion, x, y+120);
-  
-
 }
 
+// default to white unless there's a drastic change, then fade back to white
 void colour(){
   tint(red, green, blue);  
 }
@@ -92,6 +106,7 @@ void blur() {
   filter(BLUR, (leftPot/25.5));
 }
 
+// needs snappier input from the arduino (or faster parsing on this end)
 void carousel() {
   if (leftButton == 1) {
     x -=4;
@@ -105,3 +120,40 @@ void carousel() {
     x = x;
   }
 }
+
+// add something that ignores big jumps of 80cm+
+void shrink() {
+  if (leftDistance < leftDistanceLastValue - 5) {
+    w = leftDistance/2;
+    h = leftDistance;
+    if (leftDistance < 50) {
+        w = 25;
+        h = 50;
+      }
+    leftDistanceLastValue = leftDistance;
+  } else if (leftDistance > leftDistanceLastValue + 5) {
+    w = leftDistance/2;
+    h = leftDistance; 
+      if (leftDistance > 199) {
+        w = 100;
+        h = 200;
+      }
+    leftDistanceLastValue = leftDistance;
+  }
+}
+
+// Needs work - cancels out the button actions
+void rotateBulb() {
+  translate(width/2, height/2);
+  if (rightPot > rightPotLastValue) {
+    rotation += 0.2;
+    rightPotLastValue = rightPot;
+  }
+  else if (rightPot < rightPotLastValue) {
+    rotation -= 0.2;
+    rightPotLastValue = rightPot;
+  }
+  rotate(rotation);
+}  
+  
+  
