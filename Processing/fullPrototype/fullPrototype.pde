@@ -95,7 +95,7 @@ void draw() {
   // load all images in a horizontal line with space in between
   for(int i=0;i<bulb.length;i++){
     imageMode(CENTER);
-    image(bulb[i], x+(w*(i/2)), y, w, h);
+    image(bulb[i], x+(w*i), y+150, w, h);
   }
  
   //transformations to be applied after the image is loaded
@@ -143,7 +143,7 @@ void blur() {
 // needs snappier input from the arduino (or faster parsing on this end)
 void carousel() {
   if (leftButton == 1) {
-    x -= 30;
+    x -= 20;
   //  if (x < 0-(w/2)) {
   //  x = width + (w/2);
   //  }
@@ -152,7 +152,7 @@ void carousel() {
   }
   
   if (rightButton == 1) {
-    x += 30;
+    x += 20;
    // if (x > width + (w/2)) {
    // x = 0-(w/2);
    // }
