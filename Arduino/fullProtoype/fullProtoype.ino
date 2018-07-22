@@ -129,7 +129,7 @@ int leftDistance() {
   digitalWrite(leftTrigger, LOW);
 
   duration = pulseIn(leftEcho, HIGH);
-  distance = (duration/2) / 29.1; // convert to cm
+  distance = (duration/2) / 29.1;
   if (distance > 255) {
     distance = 255; // cap readings at 255cm
   }

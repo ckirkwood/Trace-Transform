@@ -20,7 +20,7 @@ int lbLastValue = 0;
 int rbLastValue = 0;
 int ldrLastValue = 0;
 int leftPotLastValue = 0;
-int rightPotLastValue = 0;
+float rightPotLastValue = -127.5;
 int redLastValue = 0;
 int greenLastValue = 0;
 int blueLastValue = 0;
@@ -73,13 +73,16 @@ void draw() {
     }
   }
   
+  bulbBrightness();
   colour();
+  
   //rotateBulb();
   
   imageMode(CENTER);
   image(bulb1, x, y, w, h);
   
   carousel();
+  upDown();
   blur();
   shrink();
   
@@ -97,32 +100,59 @@ void draw() {
   text("Motion: " + motion, x, y+120);
 }
 
-// default to white unless there's a drastic change, then fade back to white
-void colour(){
-  tint(red, green, blue);  
+
+void bulbBrightness() {
+  tint(ldr);
 }
+
+
+// Add a slow fade back to white, and a new way to activate sensor
+void colour() {
+  if (leftButton == 1 && rightButton == 1) {
+    tint(red, green, blue); 
+  }
+}
+  
   
 void blur() {
   filter(BLUR, (leftPot/25.5));
 }
 
+
 // needs snappier input from the arduino (or faster parsing on this end)
 void carousel() {
   if (leftButton == 1) {
     x -=4;
+    if (x < 0-(w/2)) {
+    x = width + (w/2);
+    }
   } else {
     x = x;
   }
   
   if (rightButton == 1) {
     x +=4;
+    if (x > width + (w/2)) {
+    x = 0-(w/2);
+    }
   } else {
     x = x;
   }
 }
 
+
+void upDown() {
+  float xyPot = float(rightPot) - 127.5;
+  y = xyPot + 280;
+}  
+
+
 // add something that ignores big jumps of 80cm+
 void shrink() {
+  int dif = leftDistance - leftDistanceLastValue;
+  if (dif > 80) {
+      println("jump");
+  }
   if (leftDistance < leftDistanceLastValue - 5) {
     w = leftDistance/2;
     h = leftDistance;
@@ -130,7 +160,6 @@ void shrink() {
         w = 25;
         h = 50;
       }
-    leftDistanceLastValue = leftDistance;
   } else if (leftDistance > leftDistanceLastValue + 5) {
     w = leftDistance/2;
     h = leftDistance; 
@@ -138,9 +167,9 @@ void shrink() {
         w = 100;
         h = 200;
       }
-    leftDistanceLastValue = leftDistance;
-  }
+    } 
 }
+
 
 // Needs work - cancels out the button actions
 void rotateBulb() {
@@ -154,6 +183,4 @@ void rotateBulb() {
     rightPotLastValue = rightPot;
   }
   rotate(rotation);
-}  
-  
-  
+}
