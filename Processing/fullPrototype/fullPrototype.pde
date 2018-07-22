@@ -1,9 +1,9 @@
 import processing.serial.*;
 
-String myString;
-int[] data;
+// create global variables for incoming serial data 
 Serial myPort;
-
+String incomingData;
+int[] data;
 int leftButton;
 int rightButton;
 int ldr;
@@ -16,6 +16,7 @@ int leftDistance;
 int rightDistance;
 int motion;
 
+// set up values to detect state change
 int lbLastValue = 0;
 int rbLastValue = 0;
 int ldrLastValue = 0;
@@ -28,17 +29,27 @@ int leftDistanceLastValue = 255;
 int rightDistanceLastValue = 255;
 int motionLastValue = 0;
 
-PImage bulb1;
+// create image variables
+PImage[] bulb;
+int files = 8;
 float x, y, w, h, rotation;
+
 
 void setup() {
   myPort = new Serial(this, Serial.list()[1], 115200);
-  size(600,600);
-  bulb1 = loadImage("Trace1.jpg");
-  x = width/2;
+  fullScreen();
+  frameRate(60);
+  
+  // load all images named in series from 0.jpg
+  bulb = new PImage[files];
+  for(int i=0; i<bulb.length; i++){
+    bulb[i]=loadImage(str(i) + ".jpg");
+    }
+ 
+  x = 0;
   y = height/2;
-  w = 100;
-  h = 200;
+  w = height;
+  h = height;
   rotation = 0.0;
 }
 
@@ -48,14 +59,18 @@ void draw() {
   
   byte[] inBuffer = new byte[11];
 
+  //read incoming data when serial port is available
   while (myPort.available() > 0) {
     inBuffer = myPort.readBytes();
     myPort.readBytes(inBuffer);
 
+    // if new data is available, save it as a string and convert
+    // to a list of integers
     if (inBuffer != null) {
-      myString = new String(inBuffer);
-      data = int(split(myString, ","));
+      incomingData = new String(inBuffer);
+      data = int(split(incomingData, ","));
       
+      // assign each value to a variable
       if (data.length > 10) {
         leftButton = data[0];
         rightButton = data[1];
@@ -68,25 +83,28 @@ void draw() {
         leftDistance = data[8];
         rightDistance = data[9];
         motion = data[10];
-        
       }
     }
   }
   
+  // transformations to be applied before the image is loaded
   bulbBrightness();
   colour();
-  
   //rotateBulb();
   
-  imageMode(CENTER);
-  image(bulb1, x, y, w, h);
-  
+  // load all images in a horizontal line with space in between
+  for(int i=0;i<bulb.length;i++){
+    imageMode(CENTER);
+    image(bulb[i], x+(w*(i/2)), y, w, h);
+  }
+ 
+  //transformations to be applied after the image is loaded
   carousel();
   upDown();
   blur();
-  shrink();
+  //shrink();
   
- 
+  // display incoming data for debugging
   int x = 20;
   int y = 30;
   text("Left Button: " + leftButton, x, y);
@@ -100,6 +118,9 @@ void draw() {
   text("Motion: " + motion, x, y+120);
 }
 
+
+
+// TRANSFORMATION FUNCTIONS
 
 void bulbBrightness() {
   tint(ldr);
@@ -122,19 +143,19 @@ void blur() {
 // needs snappier input from the arduino (or faster parsing on this end)
 void carousel() {
   if (leftButton == 1) {
-    x -=4;
-    if (x < 0-(w/2)) {
-    x = width + (w/2);
-    }
+    x -= 30;
+  //  if (x < 0-(w/2)) {
+  //  x = width + (w/2);
+  //  }
   } else {
     x = x;
   }
   
   if (rightButton == 1) {
-    x +=4;
-    if (x > width + (w/2)) {
-    x = 0-(w/2);
-    }
+    x += 30;
+   // if (x > width + (w/2)) {
+   // x = 0-(w/2);
+   // }
   } else {
     x = x;
   }
