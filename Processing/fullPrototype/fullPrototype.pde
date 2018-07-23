@@ -19,6 +19,7 @@ int motion;
 // set up values to detect state change
 int lbLastValue = 0;
 int rbLastValue = 0;
+int buttonCount = 0;
 int ldrLastValue = 0;
 int leftPotLastValue = 0;
 float rightPotLastValue = -127.5;
@@ -31,13 +32,13 @@ int motionLastValue = 0;
 
 // create image variables
 PImage[] bulb;
-int files = 8;
+int files = 7;
 float x, y, w, h, rotation;
 
 
 void setup() {
-  myPort = new Serial(this, Serial.list()[1], 115200);
-  fullScreen();
+  myPort = new Serial(this, Serial.list()[1], 230400);
+  fullScreen(P2D);
   frameRate(60);
   
   // load all images named in series from 0.jpg
@@ -46,10 +47,11 @@ void setup() {
     bulb[i]=loadImage(str(i) + ".jpg");
     }
  
-  x = 0;
+ // set image starting position and dimensions
+  x = width/2;
   y = height/2;
-  w = height;
-  h = height;
+  w = 670;
+  h = 670;
   rotation = 0.0;
 }
 
@@ -87,22 +89,17 @@ void draw() {
     }
   }
   
-  // transformations to be applied before the image is loaded
+  // load an image
+  imageSelect();
+  
+  // image transformations
   bulbBrightness();
   colour();
-  //rotateBulb();
-  
-  // load all images in a horizontal line with space in between
-  for(int i=0;i<bulb.length;i++){
-    imageMode(CENTER);
-    image(bulb[i], x+(w*i), y+150, w, h);
-  }
- 
-  //transformations to be applied after the image is loaded
-  carousel();
   upDown();
   blur();
+  //carousel();
   //shrink();
+  //rotateBulb();
   
   // display incoming data for debugging
   int x = 20;
@@ -118,7 +115,113 @@ void draw() {
   text("Motion: " + motion, x, y+120);
 }
 
+// move through a bank of images using 2 buttons
+void imageSelect() {
+  if (rightButton != rbLastValue) {  // ignore new values if the button is held 
+    if (rightButton == 1) {
+      buttonCount += 1;
+      rbLastValue = 1;
+    } else if (rightButton == 0) {
+      rbLastValue = 0;
+      }
+  } 
+  
+  if (leftButton != lbLastValue) {
+    if (leftButton == 1) {
+      buttonCount -= 1;
+      lbLastValue = 1;
+    } else if (leftButton == 0) {
+        lbLastValue = 0;
+      }
+  }
+  
+  // limit buttonCount to a range from -1 (off) to the number of images available
+  if (buttonCount < -1) {
+    buttonCount = -1;
+  }
+  if (buttonCount > 7) {
+    buttonCount = 7;
+  }
+  
+  
+  if (buttonCount == -1) {
+    background(0);
+  } else if (buttonCount == 0) {
+      imageMode(CENTER);
+      image(bulb[0], x, y, w, h);
+  } else if (buttonCount == 1) {
+      imageMode(CENTER);
+      image(bulb[1], x, y, w, h);
+  } else if (buttonCount == 2) {
+      imageMode(CENTER);
+      image(bulb[2], x, y, w, h);
+  } else if (buttonCount == 3) {
+      imageMode(CENTER);
+      image(bulb[3], x, y, w, h);
+  } else if (buttonCount == 4) {
+      imageMode(CENTER);
+      image(bulb[4], x, y, w, h);
+  } else if (buttonCount == 5) {
+      imageMode(CENTER);
+      image(bulb[5], x, y, w, h);
+  } else if (buttonCount == 6) {
+      imageMode(CENTER);
+      image(bulb[6], x, y, w, h);
+  } else if (buttonCount == 7) {
+      singleRow();
+  }    
+}
 
+// display all images on a single row
+void singleRow() { 
+  if (buttonCount == 7) {
+    for(int i=0;i<7;i++){
+      imageMode(CENTER);
+      image(bulb[i], (x/5)+(200*i), y, 200, 200);
+    }    
+  }
+  
+/*  if (buttonCount == -1) {
+    background(0);
+  } else if (buttonCount == 0) {
+    for(int i=0;i<1;i++){
+        imageMode(CENTER);
+        image(bulb[i], (x/5)+(200*i), y, 200, 200);
+      }
+  } else if (buttonCount == 1) {
+      for(int i=0;i<2;i++){
+        imageMode(CENTER);
+        image(bulb[i], (x/5)+(200*i), y, 200, 200);
+      }
+  } else if (buttonCount == 2) {
+      for(int i=0;i<3;i++){
+        imageMode(CENTER);
+        image(bulb[i], (x/5)+(200*i), y, 200, 200);
+      }
+  } else if (buttonCount == 3) {
+      for(int i=0;i<4;i++){
+        imageMode(CENTER);
+        image(bulb[i], (x/5)+(200*i), y, 200, 200);
+      }
+  } else if (buttonCount == 4) {
+      for(int i=0;i<5;i++){
+        imageMode(CENTER);
+        image(bulb[i], (x/5)+(200*i), y, 200, 200);
+      }
+  } else if (buttonCount == 5) {
+      for(int i=0;i<6;i++){
+        imageMode(CENTER);
+        image(bulb[i], (x/5)+(200*i), y, 200, 200);
+      }
+  } else if (buttonCount == 6) {
+      for(int i=0;i<7;i++){
+        imageMode(CENTER);
+        image(bulb[i], (x/5)+(200*i), y, 200, 200);
+      }    
+  }*/
+}
+  
+    
 
 // TRANSFORMATION FUNCTIONS
 
@@ -164,7 +267,7 @@ void carousel() {
 
 void upDown() {
   float xyPot = float(rightPot) - 127.5;
-  y = xyPot + 280;
+  y = xyPot + 450;
 }  
 
 
@@ -172,7 +275,7 @@ void upDown() {
 void shrink() {
   int dif = leftDistance - leftDistanceLastValue;
   if (dif > 80) {
-      println("jump");
+      //println("jump");
   }
   if (leftDistance < leftDistanceLastValue - 5) {
     w = leftDistance/2;

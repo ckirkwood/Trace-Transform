@@ -13,7 +13,7 @@ const int rightEcho = 10;
 
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(230400);
 
    if (tcs.begin()) {
     Serial.println("1");

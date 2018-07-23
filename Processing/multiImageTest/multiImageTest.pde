@@ -9,10 +9,10 @@ void setup() {
  for(int i=0; i<bulb.length; i++){
    bulb[i]=loadImage(str(i) + ".jpg");
  
-  x = 0;
+  x = 200;
   y = height/2;
-  w = height;
-  h = height;
+  w = 150;
+  h = 150;
 }
 }
 
@@ -21,7 +21,8 @@ void draw(){
   
   for(int i=0;i<bulb.length;i++){
     imageMode(CENTER);
-    image(bulb[i], x+(w*(i/2)), y, w, h);
+    image(bulb[i], x+(w*i), y, w, h);
+    tint(255, 127);
   }
   
 }
