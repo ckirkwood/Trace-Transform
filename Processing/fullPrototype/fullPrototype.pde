@@ -93,18 +93,6 @@ void draw() {
     }
   }
   
-  // load an image
-  imageSelect();
-  
-  // image transformations
- //leftStream();
-  //rightStream();
-  bulbBrightness();
-  colour();
-  scaleBulb();
-  //upDown();
-
-  
   // display incoming data for debugging
   int x = 20;
   int y = 30;
@@ -117,7 +105,23 @@ void draw() {
   text("Left Distance: " + leftDistance, x, y+90);
   text("Right Distance: " + rightDistance, x, y+105);
   text("Motion: " + motion, x, y+120);
+  
+  
+  // pre-display transformations
+  rotateBulb();
+  
+  // load an image
+  imageSelect();
+  
+  // post-display transformations
+  bulbBrightness();
+  colour();
+  scaleBulb();
+  //leftStream();
+  //rightStream();
+  //upDown(); 
 }
+
 
 // move through a bank of images using 2 buttons
 void imageSelect() {
@@ -266,6 +270,11 @@ void leftStream() {
       leftStreamStartX += int(random(-200, 200));
     }  
   }
+  
+  if (leftStreamStartX < 0 || leftStreamStartX > width) {
+    leftStreamStartX = width/4;
+  }
+  
 }
 
 
@@ -287,7 +296,12 @@ void rightStream() {
       rightStreamStartY += int(random(-200, 200));
     }  
   }
+  
+  if (rightStreamStartY < 0 || rightStreamStartY > height) {
+    rightStreamStartY = height/4;
+  }
 }
+
 
 void scaleBulb() {
   int lp = int(map(leftPot, 0, 255, 0, 670));
@@ -296,21 +310,20 @@ void scaleBulb() {
 }
 
 
-
-// NOT READY //
 void rotateBulb() {
+  int rp = int(map(rightPot, 0, 255, 0, 360));
   translate(width/2, height/2);
-  if (rightPot > rightPotLastValue) {
-    rotation += 0.2;
-    rightPotLastValue = rightPot;
-  }
-  else if (rightPot < rightPotLastValue) {
-    rotation -= 0.2;
-    rightPotLastValue = rightPot;
-  }
-  rotate(rotation);
+  rotate(radians(rp));
+  translate(-width/2, -height/2);
 }
 
+
+
+
+
+
+
+// NOT READY //
 
 // add something that ignores big jumps of 80cm+
 void shrink() {
