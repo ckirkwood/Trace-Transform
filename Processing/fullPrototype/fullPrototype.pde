@@ -30,6 +30,10 @@ int leftDistanceLastValue = 255;
 int rightDistanceLastValue = 255;
 int motionLastValue = 0;
 
+int leftStreamStartX = int(random(width));
+int rightStreamStartY = int(random(height));
+
+
 // create image variables
 PImage[] bulb;
 int files = 7;
@@ -93,13 +97,12 @@ void draw() {
   imageSelect();
   
   // image transformations
+  leftStream();
+  rightStream();
   bulbBrightness();
   colour();
-  upDown();
-  blur();
-  //carousel();
-  //shrink();
-  //rotateBulb();
+  //upDown();
+
   
   // display incoming data for debugging
   int x = 20;
@@ -143,7 +146,6 @@ void imageSelect() {
     buttonCount = 7;
   }
   
-  
   if (buttonCount == -1) {
     background(0);
   } else if (buttonCount == 0) {
@@ -171,6 +173,7 @@ void imageSelect() {
       singleRow();
   }    
 }
+
 
 // display all images on a single row
 void singleRow() { 
@@ -223,7 +226,7 @@ void singleRow() {
   
     
 
-// TRANSFORMATION FUNCTIONS
+// TRANSFORMATION FUNCTIONS //
 
 void bulbBrightness() {
   tint(ldr);
@@ -236,39 +239,70 @@ void colour() {
     tint(red, green, blue); 
   }
 }
-  
-  
-void blur() {
-  filter(BLUR, (leftPot/25.5));
-}
-
-
-// needs snappier input from the arduino (or faster parsing on this end)
-void carousel() {
-  if (leftButton == 1) {
-    x -= 20;
-  //  if (x < 0-(w/2)) {
-  //  x = width + (w/2);
-  //  }
-  } else {
-    x = x;
-  }
-  
-  if (rightButton == 1) {
-    x += 20;
-   // if (x > width + (w/2)) {
-   // x = 0-(w/2);
-   // }
-  } else {
-    x = x;
-  }
-}
 
 
 void upDown() {
   float xyPot = float(rightPot) - 127.5;
   y = xyPot + 450;
 }  
+
+
+void leftStream() {
+ int lp = int(map(leftPot, 0, 255, 0, 20));
+  
+  if (leftPot != leftPotLastValue);
+    for(int i=0; i<lp; i++){
+        image(bulb[0], leftStreamStartX, i*50, 50, 50);
+        leftPotLastValue = leftPot;
+  }
+  
+  if (lp == 0) {
+    if (leftStreamStartX < 100) {
+    leftStreamStartX += int(random(200));
+  } else if (leftStreamStartX > (width-100)) {
+      leftStreamStartX -= int(random(200));
+  } else {
+      leftStreamStartX += int(random(-200, 200));
+    }  
+  }
+}
+
+
+void rightStream() {
+  int rp = int(map(rightPot, 0, 255, 0, 30));
+  
+  if (rightPot != rightPotLastValue);
+    for(int i=0; i<rp; i++){
+        image(bulb[5], i*50, rightStreamStartY, 50, 50);
+        rightPotLastValue = rightPot;
+  }
+  
+  if (rp == 0) {
+    if (rightStreamStartY < 100) {
+    rightStreamStartY += int(random(200));
+  } else if (rightStreamStartY > (height-100)) {
+      rightStreamStartY -= int(random(200));
+  } else {
+      rightStreamStartY += int(random(-200, 200));
+    }  
+  }
+}
+
+
+
+// NOT READY //
+void rotateBulb() {
+  translate(width/2, height/2);
+  if (rightPot > rightPotLastValue) {
+    rotation += 0.2;
+    rightPotLastValue = rightPot;
+  }
+  else if (rightPot < rightPotLastValue) {
+    rotation -= 0.2;
+    rightPotLastValue = rightPot;
+  }
+  rotate(rotation);
+}
 
 
 // add something that ignores big jumps of 80cm+
@@ -295,16 +329,33 @@ void shrink() {
 }
 
 
-// Needs work - cancels out the button actions
-void rotateBulb() {
-  translate(width/2, height/2);
-  if (rightPot > rightPotLastValue) {
-    rotation += 0.2;
-    rightPotLastValue = rightPot;
+// slows down the rest of the sketch by far too much
+void blur() {
+  filter(BLUR, (leftPot/25.5));
+}
+
+
+
+/*----------------------------------------------------------------*/
+// ARCHIVE - NO LONGER NEEDED //
+
+// needs snappier input from the arduino (or faster parsing on this end)
+void carousel() {
+  if (leftButton == 1) {
+    x -= 20;
+  //  if (x < 0-(w/2)) {
+  //  x = width + (w/2);
+  //  }
+  } else {
+    x = x;
   }
-  else if (rightPot < rightPotLastValue) {
-    rotation -= 0.2;
-    rightPotLastValue = rightPot;
+  
+  if (rightButton == 1) {
+    x += 20;
+   // if (x > width + (w/2)) {
+   // x = 0-(w/2);
+   // }
+  } else {
+    x = x;
   }
-  rotate(rotation);
 }
