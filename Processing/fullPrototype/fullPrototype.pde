@@ -33,16 +33,18 @@ int motionLastValue = 0;
 int leftStreamStartX = int(random(width));
 int rightStreamStartY = int(random(height));
 
+float cellsize = 2; // Dimensions of each cell in the grid
+float columns, rows;   // Number of columns and rows in our system
 
 // create image variables
 PImage[] bulb;
 int files = 7;
-float x, y, w, h, rotation;
+float x, y, w, h;
 
 
 void setup() {
   myPort = new Serial(this, Serial.list()[1], 230400);
-  fullScreen(P2D);
+  fullScreen(P3D);
   frameRate(60);
   
   // load all images named in series from 0.jpg
@@ -56,7 +58,8 @@ void setup() {
   y = height/2;
   w = 670;
   h = 670;
-  rotation = 0.0;
+  
+  
 }
 
 
@@ -106,9 +109,13 @@ void draw() {
   text("Right Distance: " + rightDistance, x, y+105);
   text("Motion: " + motion, x, y+120);
   
+  columns = w / cellsize;  // Calculate # of columns
+  rows = h / cellsize;  // Calculate # of rows
+  
   
   // pre-display transformations
-  rotateBulb();
+  //rotateBulb();
+  explode();
   
   // load an image
   imageSelect();
@@ -116,7 +123,8 @@ void draw() {
   // post-display transformations
   bulbBrightness();
   colour();
-  scaleBulb();
+  //scaleBulb();
+  
   //leftStream();
   //rightStream();
   //upDown(); 
@@ -317,13 +325,45 @@ void rotateBulb() {
   translate(-width/2, -height/2);
 }
 
-
-
-
+// TODO: enable choice of all images
+void explode() {
+  int rp = int(map(rightPot, 0, 255, 0, width));
+  
+  // Begin loop for columns
+  for ( int i = 0; i < columns; i++) {
+    // Begin loop for rows
+    for ( int j = 0; j < rows; j++) {
+      float x = i*cellsize + cellsize/2;  // x position
+      float y = j*cellsize + cellsize/2;  // y position
+      int loc = int(x + y*w);  // Pixel array location
+      color c = bulb[0].pixels[loc];  // Grab the color
+      // Calculate a z position as a function of mouseX and pixel brightness
+      float z = (rp / float(width)) * brightness(bulb[0].pixels[loc]) - 20.0;
+      // Translate to the location, set fill and stroke, and draw the rect
+      pushMatrix();
+      translate(x + 380, y + 110, z);
+      fill(c, 255);
+      if (rp > 150) {
+        tint(0); // remove the original image while explosion is live
+      }
+      noStroke();
+      rectMode(CENTER);
+      rect(0, 0, cellsize, cellsize);
+      popMatrix();
+    }
+    }
+}
+  
 
 
 
 // NOT READY //
+
+// slows down the rest of the sketch by far too much
+void blur() {
+  filter(BLUR, (leftPot/25.5));
+}
+
 
 // add something that ignores big jumps of 80cm+
 void shrink() {
@@ -347,13 +387,6 @@ void shrink() {
       }
     } 
 }
-
-
-// slows down the rest of the sketch by far too much
-void blur() {
-  filter(BLUR, (leftPot/25.5));
-}
-
 
 
 /*----------------------------------------------------------------*/
