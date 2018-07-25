@@ -97,10 +97,11 @@ void draw() {
   imageSelect();
   
   // image transformations
-  leftStream();
-  rightStream();
+ //leftStream();
+  //rightStream();
   bulbBrightness();
   colour();
+  scaleBulb();
   //upDown();
 
   
@@ -286,6 +287,12 @@ void rightStream() {
       rightStreamStartY += int(random(-200, 200));
     }  
   }
+}
+
+void scaleBulb() {
+  int lp = int(map(leftPot, 0, 255, 0, 670));
+  w = lp;
+  h = lp;
 }
 
 
