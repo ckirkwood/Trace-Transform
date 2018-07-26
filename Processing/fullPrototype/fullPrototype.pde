@@ -99,6 +99,7 @@ void draw() {
   // display incoming data for debugging
   int x = 20;
   int y = 30;
+  fill(255);
   text("Left Button: " + leftButton, x, y);
   text("Right Button: " + rightButton, x, y+15);
   text("Light level: " + ldr, x, y+30);
@@ -109,6 +110,7 @@ void draw() {
   text("Right Distance: " + rightDistance, x, y+105);
   text("Motion: " + motion, x, y+120);
   
+  
   columns = w / cellsize;  // Calculate # of columns
   rows = h / cellsize;  // Calculate # of rows
   
@@ -116,6 +118,7 @@ void draw() {
   // pre-display transformations
   //rotateBulb();
   explode();
+  //glitch();
   
   // load an image
   imageSelect();
@@ -124,10 +127,11 @@ void draw() {
   bulbBrightness();
   colour();
   //scaleBulb();
-  
   //leftStream();
   //rightStream();
   //upDown(); 
+  //leftRight();
+ 
 }
 
 
@@ -255,8 +259,13 @@ void colour() {
 
 
 void upDown() {
-  float xyPot = float(rightPot) - 127.5;
-  y = xyPot + 450;
+  float xyPot = map(rightPot, 0, 255, 0, height);
+  y = xyPot;
+}  
+
+void leftRight() {
+  float xyPot = map(leftPot, 0, 255, 0, width);
+  x = xyPot;
 }  
 
 
@@ -312,18 +321,19 @@ void rightStream() {
 
 
 void scaleBulb() {
-  int lp = int(map(leftPot, 0, 255, 0, 670));
-  w = lp;
-  h = lp;
+  int rp = int(map(rightPot, 0, 255, 0, 670));
+  w = rp;
+  h = rp;
 }
 
 
 void rotateBulb() {
-  int rp = int(map(rightPot, 0, 255, 0, 360));
+  int lp = int(map(leftPot, 0, 255, 0, 360));
   translate(width/2, height/2);
-  rotate(radians(rp));
+  rotate(radians(lp));
   translate(-width/2, -height/2);
 }
+
 
 // TODO: enable choice of all images
 void explode() {
@@ -338,11 +348,14 @@ void explode() {
       int loc = int(x + y*w);  // Pixel array location
       color c = bulb[0].pixels[loc];  // Grab the color
       // Calculate a z position as a function of mouseX and pixel brightness
-      float z = (rp / float(width)) * brightness(bulb[0].pixels[loc]) - 20.0;
+      float z = (rp / float(width)) * brightness(bulb[0].pixels[loc]) + 20.0;
       // Translate to the location, set fill and stroke, and draw the rect
       pushMatrix();
       translate(x + 380, y + 110, z);
       fill(c, 255);
+      if (leftButton == 1 && rightButton == 1) {
+        fill(red, green, blue); 
+      }
       if (rp > 150) {
         tint(0); // remove the original image while explosion is live
       }
@@ -354,6 +367,11 @@ void explode() {
     }
 }
   
+  
+void glitch() {
+  scaleBulb();
+  explode();
+}
 
 
 
