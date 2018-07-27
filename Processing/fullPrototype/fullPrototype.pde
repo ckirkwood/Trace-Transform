@@ -26,8 +26,8 @@ float rightPotLastValue = -127.5;
 int redLastValue = 0;
 int greenLastValue = 0;
 int blueLastValue = 0;
-int leftDistanceLastValue = 255;
-int rightDistanceLastValue = 255;
+int leftDistanceLastValue = 0;
+int rightDistanceLastValue = 0;
 int motionLastValue = 0;
 
 int leftStreamStartX = int(random(width));
@@ -116,22 +116,21 @@ void draw() {
   
   
   // pre-display transformations
-  //rotateBulb();
-  explode();
-  //glitch();
+  rotateBulb(); // left distance
+  explode(); // pot1
+  glitch(); //pot 2
   
   // load an image
-  imageSelect();
+  imageSelect(); // buttons 1 + 2
   
   // post-display transformations
-  bulbBrightness();
-  colour();
-  //scaleBulb();
-  //leftStream();
-  //rightStream();
-  //upDown(); 
-  //leftRight();
- 
+  bulbBrightness(); // ldr
+  colour(); // colour sensor
+  scaleBulb(); // right distance
+  //upDown(); // slider 1
+  //leftRight(); // slider 2
+  //leftStream(); // pot 4
+  //rightStream(); // pot 5
 }
 
 
@@ -321,16 +320,29 @@ void rightStream() {
 
 
 void scaleBulb() {
-  int rp = int(map(rightPot, 0, 255, 0, 670));
-  w = rp;
-  h = rp;
+  //int rp = int(map(rightPot, 0, 255, 0, 670)); // scale by rp to change input to a pot
+  
+  float rd = map(rightDistance, 255, 0, 255, 0);
+  if (rd > 20) {
+    rd = 20;
+  }
+  float scale = (rd*33.5);
+  println(int(scale));
+  w = int(scale);
+  h = int(scale);
 }
 
 
 void rotateBulb() {
-  int lp = int(map(leftPot, 0, 255, 0, 360));
+  //int lp = int(map(leftPot, 0, 255, 0, 360)); // rotate by lp to change input to a pot
+  
+  float ld = map(leftDistance, 255, 0, 255, 0);
+  if (ld > 20) {
+    ld = 20;
+  }
+  float angle = (ld*18);
   translate(width/2, height/2);
-  rotate(radians(lp));
+  rotate(radians(angle));
   translate(-width/2, -height/2);
 }
 
@@ -366,45 +378,25 @@ void explode() {
     }
     }
 }
+
+
+// NOT READY //
+
   
-  
+// rewrite manually to take input from the same pot
 void glitch() {
   scaleBulb();
   explode();
 }
-
-
-
-// NOT READY //
 
 // slows down the rest of the sketch by far too much
 void blur() {
   filter(BLUR, (leftPot/25.5));
 }
 
+ 
 
-// add something that ignores big jumps of 80cm+
-void shrink() {
-  int dif = leftDistance - leftDistanceLastValue;
-  if (dif > 80) {
-      //println("jump");
-  }
-  if (leftDistance < leftDistanceLastValue - 5) {
-    w = leftDistance/2;
-    h = leftDistance;
-    if (leftDistance < 50) {
-        w = 25;
-        h = 50;
-      }
-  } else if (leftDistance > leftDistanceLastValue + 5) {
-    w = leftDistance/2;
-    h = leftDistance; 
-      if (leftDistance > 199) {
-        w = 100;
-        h = 200;
-      }
-    } 
-}
+
 
 
 /*----------------------------------------------------------------*/
