@@ -74,7 +74,8 @@ void loop() {
   Serial.print(round(b)); Serial.print(",");
   Serial.print(leftD); Serial.print(",");
   Serial.print(rightD); Serial.print(",");
-  Serial.println(pir);
+  Serial.print(pir); Serial.print(", ");
+  Serial.println("0");
 }
 
 
