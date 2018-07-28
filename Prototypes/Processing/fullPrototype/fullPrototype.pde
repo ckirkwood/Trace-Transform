@@ -141,15 +141,12 @@ void draw() {
 
 
   // PRE DISPLAY TRANSFORMATIONS //
-  //rotateBulb(); // left distance
+  rotateBulb(); // left distance
   glitch();
   explode();
-  
 
   // DISPLAY IMAGE //
   imageSelect(); // buttons
-
-
 
   // POST-DISPLAY TRANSFORMATIONS //
   bulbBrightness(); // ldr
