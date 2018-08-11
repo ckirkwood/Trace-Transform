@@ -1,4 +1,22 @@
-import processing.serial.*;
+import processing.core.*; 
+import processing.data.*; 
+import processing.event.*; 
+import processing.opengl.*; 
+
+import processing.serial.*; 
+
+import java.util.HashMap; 
+import java.util.ArrayList; 
+import java.io.File; 
+import java.io.BufferedReader; 
+import java.io.PrintWriter; 
+import java.io.InputStream; 
+import java.io.OutputStream; 
+import java.io.IOException; 
+
+public class fullPrototype extends PApplet {
+
+
 
 // create global variables for incoming serial data
 Serial myPort;
@@ -22,7 +40,7 @@ int rbLastValue = 0;
 int buttonCount = 0;
 int ldrLastValue = 0;
 int leftPotLastValue = 0;
-float rightPotLastValue = -127.5;
+float rightPotLastValue = -127.5f;
 int redLastValue = 0;
 int greenLastValue = 0;
 int blueLastValue = 0;
@@ -30,8 +48,8 @@ int leftDistanceLastValue = 0;
 int rightDistanceLastValue = 0;
 int motionLastValue = 0;
 
-int leftStreamStartX = int(random(width));
-int rightStreamStartY = int(random(height));
+int leftStreamStartX = PApplet.parseInt(random(width));
+int rightStreamStartY = PApplet.parseInt(random(height));
 
 float cellsize = 2; // Dimensions of each cell in the grid
 float columns, rows;   // Number of columns and rows in our system
@@ -42,9 +60,9 @@ int files = 7;
 float x, y, w, h;
 
 
-void setup() {
+public void setup() {
   myPort = new Serial(this, Serial.list()[1], 230400);
-  fullScreen(P3D);
+  
   frameRate(60);
 
   // load all images named in series from 0.jpg
@@ -61,7 +79,7 @@ void setup() {
 }
 
 
-void draw() {
+public void draw() {
   background(0);
 
   byte[] inBuffer = new byte[11];
@@ -75,7 +93,7 @@ void draw() {
     // to a list of integers
     if (inBuffer != null) {
       incomingData = new String(inBuffer);
-      data = int(split(incomingData, ","));
+      data = PApplet.parseInt(split(incomingData, ","));
 
       // assign each value to a variable
       if (data.length > 10) {
@@ -163,7 +181,7 @@ void draw() {
 // IMAGE NAVIGATION //
 
 // move through a bank of images using 2 buttons
-void imageSelect() {
+public void imageSelect() {
   imageMode(CENTER);
   image(bulb[buttonCount], x, y, w, h);
   /*if (rightPot > 100) {
@@ -174,7 +192,7 @@ void imageSelect() {
 
 
 // display all images on a single row
-void singleRow() {
+public void singleRow() {
   if (buttonCount == 7) {
     for (int i=0; i<7; i++) {
       imageMode(CENTER);
@@ -227,33 +245,33 @@ void singleRow() {
 
 // TRANSFORMATION FUNCTIONS //
 
-void bulbBrightness() {
+public void bulbBrightness() {
   tint(ldr);
 }
 
 
 // Add a slow fade back to white, and a new way to activate sensor
-void colour() {
+public void colour() {
   if (leftButton == 1 && rightButton == 1) {
     tint(red, green, blue);
   }
 }
 
 
-void upDown() {
+public void upDown() {
   float xyPot = map(rightPot, 0, 255, 0, height);
   y = xyPot;
 }
 
 
-void leftRight() {
+public void leftRight() {
   float xyPot = map(leftPot, 0, 255, 0, width);
   x = xyPot;
 }
 
 
-void leftStream() {
-  int lp = int(map(leftPot, 0, 255, 0, 20));
+public void leftStream() {
+  int lp = PApplet.parseInt(map(leftPot, 0, 255, 0, 20));
 
   if (leftPot != leftPotLastValue);
   for (int i=0; i<lp; i++) {
@@ -263,11 +281,11 @@ void leftStream() {
 
   if (lp == 0) {
     if (leftStreamStartX < 100) {
-      leftStreamStartX += int(random(200));
+      leftStreamStartX += PApplet.parseInt(random(200));
     } else if (leftStreamStartX > (width-100)) {
-      leftStreamStartX -= int(random(200));
+      leftStreamStartX -= PApplet.parseInt(random(200));
     } else {
-      leftStreamStartX += int(random(-200, 200));
+      leftStreamStartX += PApplet.parseInt(random(-200, 200));
     }
   }
 
@@ -277,8 +295,8 @@ void leftStream() {
 }
 
 
-void rightStream() {
-  int rp = int(map(rightPot, 0, 255, 0, 30));
+public void rightStream() {
+  int rp = PApplet.parseInt(map(rightPot, 0, 255, 0, 30));
 
   if (rightPot != rightPotLastValue);
   for (int i=0; i<rp; i++) {
@@ -288,11 +306,11 @@ void rightStream() {
 
   if (rp == 0) {
     if (rightStreamStartY < 100) {
-      rightStreamStartY += int(random(200));
+      rightStreamStartY += PApplet.parseInt(random(200));
     } else if (rightStreamStartY > (height-100)) {
-      rightStreamStartY -= int(random(200));
+      rightStreamStartY -= PApplet.parseInt(random(200));
     } else {
-      rightStreamStartY += int(random(-200, 200));
+      rightStreamStartY += PApplet.parseInt(random(-200, 200));
     }
   }
 
@@ -302,21 +320,21 @@ void rightStream() {
 }
 
 
-void scaleBulb() {
-  int rp = int(map(rightPot, 0, 255, 0, 670)); // scale by rp to change input to a pot
+public void scaleBulb() {
+  int rp = PApplet.parseInt(map(rightPot, 0, 255, 0, 670)); // scale by rp to change input to a pot
 
   /*float rd = map(rightDistance, 255, 0, 255, 0); // scale by rd for distance sensor
    if (rd > 20) {
    rd = 20;
    }
    float scale = (rd*33.5);*/
-  w = int(rp);
-  h = int(rp);
+  w = PApplet.parseInt(rp);
+  h = PApplet.parseInt(rp);
 }
 
 
-void rotateBulb() {
-  int lp = int(map(leftPot, 0, 255, 0, 360)); // rotate by lp to change input to a pot
+public void rotateBulb() {
+  int lp = PApplet.parseInt(map(leftPot, 0, 255, 0, 360)); // rotate by lp to change input to a pot
 
   /*float ld = map(leftDistance, 255, 0, 255, 0);
    if (ld > 20) {
@@ -330,7 +348,7 @@ void rotateBulb() {
 }
 
 
-void explode() {
+public void explode() {
   float rd = map(rightDistance, 255, 0, 255, 0);
   if (rd > 20) {
     rd = 20;
@@ -344,10 +362,10 @@ void explode() {
     for ( int j = 0; j < rows; j++) {
       float x = i*cellsize + cellsize/2;  // x position
       float y = j*cellsize + cellsize/2;  // y position
-      int loc = int(x + y*670);  // Pixel array location
-      color c = bulb[buttonCount].pixels[loc];  // Grab the color
+      int loc = PApplet.parseInt(x + y*670);  // Pixel array location
+      int c = bulb[buttonCount].pixels[loc];  // Grab the color
       // Calculate a z position as a function of mouseX and pixel brightness
-      float z = (scale / float(width)) * brightness(bulb[buttonCount].pixels[loc]) - 20.0;
+      float z = (scale / PApplet.parseFloat(width)) * brightness(bulb[buttonCount].pixels[loc]) - 20.0f;
       // Translate to the location, set fill and stroke, and draw the rect
       pushMatrix();
       translate(x + 386, y + 115, z);
@@ -368,13 +386,13 @@ void explode() {
 }
 
 
-void glitch() {
+public void glitch() {
   if (rightPot != 255) {
-    int rp = int(map(rightPot, 0, 255, 0, 670));
+    int rp = PApplet.parseInt(map(rightPot, 0, 255, 0, 670));
     w = rp;
     h = rp;
 
-    int rp2 = int(map(rightPot, 0, 255, 0, width));
+    int rp2 = PApplet.parseInt(map(rightPot, 0, 255, 0, width));
 
     // Begin loop for columns
     for ( int i = 0; i < columns; i++) {
@@ -382,10 +400,10 @@ void glitch() {
       for ( int j = 0; j < rows; j++) {
         float x = i*cellsize + cellsize/2;  // x position
         float y = j*cellsize + cellsize/2;  // y position
-        int loc = int(x + y*w);  // Pixel array location
-        color c = bulb[0].pixels[loc];  // Grab the color
+        int loc = PApplet.parseInt(x + y*w);  // Pixel array location
+        int c = bulb[0].pixels[loc];  // Grab the color
         // Calculate a z position as a function of mouseX and pixel brightness
-        float z = (rp2 / float(width)) * brightness(bulb[0].pixels[loc]) + 20.0;
+        float z = (rp2 / PApplet.parseFloat(width)) * brightness(bulb[0].pixels[loc]) + 20.0f;
         // Translate to the location, set fill and stroke, and draw the rect
         pushMatrix();
         translate(x + 380, y + 110, z);
@@ -406,7 +424,7 @@ void glitch() {
 }
 
 
-void blur() {
+public void blur() {
    float ld = map(leftDistance, 255, 0, 255, 0);
    if (ld > 20) {
    ld = 20;
@@ -424,7 +442,7 @@ void blur() {
 // ARCHIVE - NO LONGER NEEDED //
 
 // needs snappier input from the arduino (or faster parsing on this end)
-void carousel() {
+public void carousel() {
   if (leftButton == 1) {
     x -= 20;
     //  if (x < 0-(w/2)) {
@@ -441,5 +459,15 @@ void carousel() {
     // }
   } else {
     x = x;
+  }
+}
+  public void settings() {  fullScreen(P3D); }
+  static public void main(String[] passedArgs) {
+    String[] appletArgs = new String[] { "fullPrototype" };
+    if (passedArgs != null) {
+      PApplet.main(concat(appletArgs, passedArgs));
+    } else {
+      PApplet.main(appletArgs);
+    }
   }
 }
