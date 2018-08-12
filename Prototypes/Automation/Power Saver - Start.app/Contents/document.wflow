@@ -60,21 +60,19 @@
 				<key>Class Name</key>
 				<string>AMStartScreenSaverAction</string>
 				<key>InputUUID</key>
-				<string>A821E82D-430F-4248-A624-1BF487FB9667</string>
+				<string>A05B1451-E875-470B-B53E-77A460D928AA</string>
 				<key>Keywords</key>
 				<array/>
 				<key>OutputUUID</key>
-				<string>02AA4991-D2FD-4DD6-8E7F-8B49B01A38C4</string>
+				<string>F5819D41-3351-4F30-BD80-9F4737A731B2</string>
 				<key>UUID</key>
-				<string>47D592BA-34DF-4FD2-A382-2404A1F97A8F</string>
+				<string>77F30985-F3C4-482C-977E-B787CB94F07A</string>
 				<key>UnlocalizedApplications</key>
 				<array>
 					<string>System</string>
 				</array>
 				<key>arguments</key>
 				<dict/>
-				<key>conversionLabel</key>
-				<integer>0</integer>
 			</dict>
 		</dict>
 	</array>

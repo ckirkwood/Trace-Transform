@@ -51,6 +51,8 @@ int leftDistanceLastValue = 0;
 int rightDistanceLastValue = 0;
 
 int motionLastValue = 0;
+int time = 0;
+int dormant = 0;
 
 int xStream_1_start = int(random(width));
 int xStream_2_start = int(random(width));
@@ -72,7 +74,8 @@ float x, y, w, h;
 void setup() {
   myPort = new Serial(this, Serial.list()[1], 230400);
   fullScreen(P3D);
-  frameRate(60);
+  frameRate(120);
+  
 
   // load all images named in series from 0.jpg
   bulb = new PImage[files];
@@ -90,6 +93,7 @@ void setup() {
 
 void draw() {
   background(0);
+  noCursor();
 
   byte[] inBuffer = new byte[20];
 
@@ -105,7 +109,7 @@ void draw() {
       data = int(split(incomingData, ","));
 
       // assign each value to a variable
-      if (data.length > 10) {
+      if (data.length > 19) {
         leftButton = data[0];
         rightButton = data[1];
         pot1 = data[2];
@@ -179,6 +183,8 @@ void draw() {
   text("Left Distance: " + leftDistance, x, y+225);
   text("Right Distance: " + rightDistance, x, y+240);
   text("Motion: " + motion, x, y+255);
+  
+  println(leftButton, " | ", rightButton, " | ", pot1, " | ", pot2, " | ", pot3, " | ", pot4, " | ", pot5, " | ", pot6, " | ", pot7, " | ", pot8, " | ", pot9, " | ", xSlider, " | ", ySlider, " | ", ldr, " | ", red, " | ", green, " | ", blue, " | ", leftDistance, " | ", rightDistance, " | ", motion);
 
   // set dimensions for explode function
   columns = w / cellsize;  // Calculate # of columns
@@ -287,7 +293,7 @@ void colour() {
 
 
 void upDown() {
-  float yPos = map(ySlider, 0, 255, 0, height);
+  float yPos = map(ySlider, 0, 255, height, 0);
   y = yPos;
 }
 
@@ -450,7 +456,6 @@ void yStream3() {
 
 void scaleBulb() {
   int pot = int(map(pot7, 0, 255, 0, 670)); 
-
   w = int(pot);
   h = int(pot);
 }
@@ -480,9 +485,9 @@ void glitch() {
         float x = i*cellsize + cellsize/2;  // x position
         float y = j*cellsize + cellsize/2;  // y position
         int loc = int(x + y*w);  // Pixel array location
-        color c = bulb[0].pixels[loc];  // Grab the color
+        color c = bulb[buttonCount].pixels[loc];  // Grab the color
         // Calculate a z position as a function of mouseX and pixel brightness
-        float z = (value2 / float(width)) * brightness(bulb[0].pixels[loc]) + 20.0;
+        float z = (value2 / float(width)) * brightness(bulb[buttonCount].pixels[loc]) + 20.0;
         // Translate to the location, set fill and stroke, and draw the rect
         pushMatrix();
         translate(x + 380, y + 110, z);
@@ -509,7 +514,7 @@ void explode() {
     rd = 20;
   }
   float scale = map(rd, 20, 0, 0, 3000);
-  println(scale);
+  //println(scale);
 
   // Begin loop for columns
   for ( int i = 0; i < columns; i++) {
@@ -548,4 +553,21 @@ void blur() {
    }
    float inverse = map(ld, 20, 0, 0, 5);
    filter(BLUR, inverse);
+}
+
+
+void detectMotion() {
+  if (motion == 255 &&  motion != motionLastValue) {
+    motionLastValue = 255;
+    time = millis();
+  } else if (motion == 0) {
+    motionLastValue = 0;
+    dormant = millis();
+    if ((dormant - time) < 900000) {
+      launch("/Users/trace/Desktop/stopPowerSaver.app");
+    }
+    if ((dormant - time) > 900000) { 
+      launch("/Users/trace/Desktop/startPowerSaver.app");
+    }
+  }
 }
