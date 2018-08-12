@@ -1,4 +1,4 @@
-#include <Wire.h>
+  #include <Wire.h>
 #include "Adafruit_TCS34725.h"
 #include <math.h>
 
@@ -35,17 +35,17 @@ void setup() {
 void loop() {
   //ANALOGUE INPUTS
   int ldr = readPot(0);
-  int pot1 = readPot(1);
-  int pot2 = readPot(2);
-  int pot3 = readPot(3);
-  int pot4 = readPot(4);
-  int pot5 = readPot(5);
-  int pot6 = readPot(6);
-  int pot7 = readPot(7);
-  int pot8 = readPot(8);
-  int pot9 = readPot(9);
+  int pot1 = readPotInverse(1);
+  int pot2 = readPotInverse(2);
+  int pot3 = readPotInverse(3);
+  int pot4 = readPotInverse(4);
+  int pot5 = readPotInverse(5);
+  int pot6 = readPotInverse(6);
+  int pot7 = readPotInverse(7);
+  int pot8 = readPotInverse(8);
+  int pot9 = readPotInverse(9);
   int xSlider = readPot(10);
-  int ySlider = readPot(11);
+  int ySlider = readPotInverse(11);
   
 
   // ULTRASONIC DISTANCE SENSORS
@@ -111,6 +111,20 @@ int readPot(int p) {
   sval = sval / 5;    // average
   sval = sval / 4;    // scale to 8 bits (0 - 255)
   return sval;
+}
+
+int readPotInverse(int p) {
+  int i;
+  int sval = 0;
+
+  for (i = 0; i < 5; i++) {
+    sval = sval + analogRead(p);    // sensor on analog pin 0
+  }
+
+  sval = sval / 5;    // average
+  sval = sval / 4;    // scale to 8 bits (0 - 255)
+  int inverse = map(sval, 255, 0, 0, 255);
+  return inverse;
 }
 
 int leftDistance() {
@@ -183,7 +197,3 @@ int motion() {
      return m;
   }
 }
-
-
-
-
