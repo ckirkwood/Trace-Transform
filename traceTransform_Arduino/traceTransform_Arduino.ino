@@ -45,7 +45,7 @@ void loop() {
   int pot8 = readPotInverse(8);
   int pot9 = readPotInverse(9);
   int xSlider = readPot(10);
-  int ySlider = readPotInverse(11);
+  int ySlider = readPot(11);
   
 
   // ULTRASONIC DISTANCE SENSORS

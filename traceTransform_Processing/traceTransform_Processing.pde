@@ -53,6 +53,8 @@ int rightDistanceLastValue = 0;
 int motionLastValue = 0;
 int time = 0;
 int dormant = 0;
+boolean powerSaverLaunched = false;
+boolean powerSaverStopped = false;
 
 int xStream_1_start = int(random(width));
 int xStream_2_start = int(random(width));
@@ -74,8 +76,9 @@ float x, y, w, h;
 void setup() {
   myPort = new Serial(this, Serial.list()[1], 230400);
   fullScreen(P3D);
-  frameRate(120);
-  
+  //frameRate(120);
+
+
 
   // load all images named in series from 0.jpg
   bulb = new PImage[files];
@@ -93,7 +96,7 @@ void setup() {
 
 void draw() {
   background(0);
-  noCursor();
+
 
   byte[] inBuffer = new byte[20];
 
@@ -109,7 +112,7 @@ void draw() {
       data = int(split(incomingData, ","));
 
       // assign each value to a variable
-      if (data.length > 19) {
+      if (data.length > 19 && data[0] < 2 && data[1] < 2) {
         leftButton = data[0];
         rightButton = data[1];
         pot1 = data[2];
@@ -183,8 +186,8 @@ void draw() {
   text("Left Distance: " + leftDistance, x, y+225);
   text("Right Distance: " + rightDistance, x, y+240);
   text("Motion: " + motion, x, y+255);
-  
-  println(leftButton, " | ", rightButton, " | ", pot1, " | ", pot2, " | ", pot3, " | ", pot4, " | ", pot5, " | ", pot6, " | ", pot7, " | ", pot8, " | ", pot9, " | ", xSlider, " | ", ySlider, " | ", ldr, " | ", red, " | ", green, " | ", blue, " | ", leftDistance, " | ", rightDistance, " | ", motion);
+
+  // println(leftButton, " | ", rightButton, " | ", pot1, " | ", pot2, " | ", pot3, " | ", pot4, " | ", pot5, " | ", pot6, " | ", pot7, " | ", pot8, " | ", pot9, " | ", xSlider, " | ", ySlider, " | ", ldr, " | ", red, " | ", green, " | ", blue, " | ", leftDistance, " | ", rightDistance, " | ", motion);
 
   // set dimensions for explode function
   columns = w / cellsize;  // Calculate # of columns
@@ -212,6 +215,7 @@ void draw() {
   yStream1();
   yStream2();
   yStream3();
+  detectMotion();
 }
 
 
@@ -547,12 +551,12 @@ void explode() {
 
 
 void blur() {
-   float ld = map(leftDistance, 255, 0, 255, 0);
-   if (ld > 20) {
-   ld = 20;
-   }
-   float inverse = map(ld, 20, 0, 0, 5);
-   filter(BLUR, inverse);
+  float ld = map(leftDistance, 255, 0, 255, 0);
+  if (ld > 20) {
+    ld = 20;
+  }
+  float inverse = map(ld, 20, 0, 0, 5);
+  filter(BLUR, inverse);
 }
 
 
@@ -563,11 +567,16 @@ void detectMotion() {
   } else if (motion == 0) {
     motionLastValue = 0;
     dormant = millis();
-    if ((dormant - time) < 900000) {
-      launch("/Users/trace/Desktop/stopPowerSaver.app");
-    }
-    if ((dormant - time) > 900000) { 
-      launch("/Users/trace/Desktop/startPowerSaver.app");
-    }
   }
+
+
+  if ((dormant - time) < 6000 && powerSaverStopped == false) {
+    launch("/Users/trace/Desktop/stopPowerSaver.app");
+    powerSaverStopped = true;
+  } else if ((dormant - time) > 900000 && powerSaverStopped == true) { 
+    launch("/Users/trace/Desktop/startPowerSaver.app");
+    powerSaverStopped = false;
+  }
+  
+  println(time, " | ", dormant);
 }

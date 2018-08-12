@@ -33,10 +33,12 @@ int dormant = 0;
 
 void setup() {
   myPort = new Serial(this, Serial.list()[1], 230400);
+  fullScreen();
 }
 
 void draw() {
-  background(0);
+  background(200);
+  noCursor();
 
   byte[] inBuffer = new byte[20];
 
@@ -83,18 +85,17 @@ void draw() {
 }
 
 void detectMotion() {
-
   if (motion == 255 &&  motion != motionLastValue) {
     motionLastValue = 255;
     time = millis();
   } else if (motion == 0) {
     motionLastValue = 0;
     dormant = millis();
-    if ((dormant - time) < 10000) { 
-      println("MOTION IN THE LAST 10 SECONDS");
+    if ((dormant - time) < 900000) {
+      launch("/Users/trace/Desktop/stopPowerSaver.app");
     }
-    if ((dormant - time) > 10000) { 
-      println("NO MOTION FOR MORE THAN 10 SECONDS");
+    if ((dormant - time) > 900000) { 
+      launch("/Users/trace/Desktop/startPowerSaver.app");
     }
   }
 }
