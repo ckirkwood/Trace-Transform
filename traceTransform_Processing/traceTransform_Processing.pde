@@ -1,5 +1,6 @@
 import processing.serial.*;
 
+
 // create global variables for incoming serial data
 Serial myPort;
 String incomingData;
@@ -21,6 +22,7 @@ int ldr;
 int red;
 int green;
 int blue;
+int rgbButton;
 int leftDistance;
 int rightDistance;
 int motion;
@@ -76,9 +78,7 @@ float x, y, w, h;
 void setup() {
   myPort = new Serial(this, Serial.list()[1], 230400);
   fullScreen(P3D);
-  //frameRate(120);
-
-
+  frameRate(60);
 
   // load all images named in series from 0.jpg
   bulb = new PImage[files];
@@ -97,22 +97,20 @@ void setup() {
 void draw() {
   background(0);
 
-
-  byte[] inBuffer = new byte[20];
+  byte[] inBuffer = new byte[21];
 
   //read incoming data when serial port is available
   while (myPort.available() > 0) {
     inBuffer = myPort.readBytes();
     myPort.readBytes(inBuffer);
 
-    // if new data is available, save it as a string and convert
-    // to a list of integers
     if (inBuffer != null) {
       incomingData = new String(inBuffer);
       data = int(split(incomingData, ","));
 
-      // assign each value to a variable
-      if (data.length > 19 && data[0] < 2 && data[1] < 2) {
+      // if new data is available, save it as a string and convert
+      // to a list of integers
+      if (data.length > 20 && data[0] < 2 && data[1] < 2) {
         leftButton = data[0];
         rightButton = data[1];
         pot1 = data[2];
@@ -130,12 +128,14 @@ void draw() {
         red = data[14];
         green = data[15];
         blue = data[16];
-        leftDistance = data[17];
-        rightDistance = data[18];
-        motion = data[19];
+        rgbButton = data[17];
+        leftDistance = data[18];
+        rightDistance = data[19];
+        motion = data[20];
       }
     }
   }
+
 
   // Capture button inputs between a range of 0-6
   if (rightButton != rbLastValue) {  // ignore new values if the button is held
@@ -164,7 +164,6 @@ void draw() {
     buttonCount = 6;
   }
 
-  // display incoming data for debugging
   int x = 20;
   int y = 30;
   fill(255);
@@ -183,11 +182,13 @@ void draw() {
   text("Vertical slider: " + ySlider, x, y+180);
   text("Light level: " + ldr, x, y+195);
   text("RGB: " + red + ", " + green + ", " + blue, x, y+210);
-  text("Left Distance: " + leftDistance, x, y+225);
-  text("Right Distance: " + rightDistance, x, y+240);
-  text("Motion: " + motion, x, y+255);
+  text("RGB Button: " + rgbButton, x, y+225);
+  text("Left Distance: " + leftDistance, x, y+240);
+  text("Right Distance: " + rightDistance, x, y+255);
+  text("Motion: " + motion, x, y+270);
 
-  // println(leftButton, " | ", rightButton, " | ", pot1, " | ", pot2, " | ", pot3, " | ", pot4, " | ", pot5, " | ", pot6, " | ", pot7, " | ", pot8, " | ", pot9, " | ", xSlider, " | ", ySlider, " | ", ldr, " | ", red, " | ", green, " | ", blue, " | ", leftDistance, " | ", rightDistance, " | ", motion);
+  //println(leftButton, " | ", rightButton, " | ", pot1, " | ", pot2, " | ", pot3, " | ", pot4, " | ", pot5, " | ", pot6, " | ", pot7, " | ", pot8, " | ", pot9, " | ", xSlider, " | ", ySlider, " | ", ldr, " | ", red, " | ", green, " | ", blue, " | ", rgbButton, " | ", leftDistance, " | ", rightDistance, " | ", motion);
+
 
   // set dimensions for explode function
   columns = w / cellsize;  // Calculate # of columns
@@ -217,7 +218,6 @@ void draw() {
   yStream3();
   detectMotion();
 }
-
 
 
 // IMAGE NAVIGATION //
@@ -290,7 +290,7 @@ void bulbBrightness() {
 
 // Add a slow fade back to white, and a new way to activate sensor
 void colour() {
-  if (leftButton == 1 && rightButton == 1) {
+  if (rgbButton == 1) {
     tint(red, green, blue);
   }
 }
@@ -306,8 +306,6 @@ void leftRight() {
   float xPos = map(xSlider, 0, 255, 0, width);
   x = xPos;
 }
-
-
 void xStream1() {
   int pot = int(map(pot1, 0, 255, 0, 20));
 
@@ -474,43 +472,6 @@ void rotateBulb() {
 }
 
 
-void glitch() {
-  if (pot9 != 255) {
-    int pot = int(map(pot9, 0, 255, 0, 670));
-    w = pot;
-    h = pot;
-
-    int value2 = int(map(pot9, 0, 255, 0, width));
-
-    // Begin loop for columns
-    for ( int i = 0; i < columns; i++) {
-      // Begin loop for rows
-      for ( int j = 0; j < rows; j++) {
-        float x = i*cellsize + cellsize/2;  // x position
-        float y = j*cellsize + cellsize/2;  // y position
-        int loc = int(x + y*w);  // Pixel array location
-        color c = bulb[buttonCount].pixels[loc];  // Grab the color
-        // Calculate a z position as a function of mouseX and pixel brightness
-        float z = (value2 / float(width)) * brightness(bulb[buttonCount].pixels[loc]) + 20.0;
-        // Translate to the location, set fill and stroke, and draw the rect
-        pushMatrix();
-        translate(x + 380, y + 110, z);
-        fill(c, 255);
-        if (leftButton == 1 && rightButton == 1) {
-          fill(red, green, blue);
-        }
-        if (value2 > 150) {
-          tint(0); // remove the original image while explosion is live
-        }
-        noStroke();
-        rectMode(CENTER);
-        rect(0, 0, cellsize, cellsize);
-        popMatrix();
-      }
-    }
-  }
-}
-
 
 void explode() {
   float rd = map(rightDistance, 255, 0, 255, 0);
@@ -518,7 +479,7 @@ void explode() {
     rd = 20;
   }
   float scale = map(rd, 20, 0, 0, 3000);
-  //println(scale);
+  
 
   // Begin loop for columns
   for ( int i = 0; i < columns; i++) {
@@ -534,13 +495,9 @@ void explode() {
       pushMatrix();
       translate(x + 386, y + 115, z);
       fill(c, 240);
-      /*if (leftButton == 1 && rightButton == 1) {
-       fill(red, green, blue);
-       }
-       if (rightDistance < 20 && rightPot == 0) {
-       fill(0);
-       }*/
-
+      if (scale == 0) {
+        fill(c, 0);
+      }
       noStroke();
       rectMode(CENTER);
       rect(0, 0, cellsize, cellsize);
@@ -550,6 +507,44 @@ void explode() {
 }
 
 
+void glitch() {
+  if (pot9 != 255) {
+    int rp = int(map(pot9, 0, 255, 0, 670));
+    w = rp;
+    h = rp;
+    
+    int rp2 = int(map(pot9, 0, 255, 0, width));
+    
+    // Begin loop for columns
+    for ( int i = 0; i < columns; i++) {
+      // Begin loop for rows
+      for ( int j = 0; j < rows; j++) {
+        float x = i*cellsize + cellsize/2;  // x position
+        float y = j*cellsize + cellsize/2;  // y position
+        int loc = int(x + y*w);  // Pixel array location
+        color c = bulb[0].pixels[loc];  // Grab the color
+        // Calculate a z position as a function of mouseX and pixel brightness
+        float z = (rp2 / float(width)) * brightness(bulb[0].pixels[loc]) + 20.0;
+        // Translate to the location, set fill and stroke, and draw the rect
+        pushMatrix();
+        translate(x + 380, y + 110, z);
+        fill(c, 255);
+        if (rp2 > 10) {
+          fill(c, 0); // remove the original image while explosion is live
+        }
+        noStroke();
+        rectMode(CENTER);
+        rect(0, 0, cellsize, cellsize);
+        popMatrix();
+      }
+    }
+  }
+}
+
+
+
+
+// slows down the rest of the sketch by far too much
 void blur() {
   float ld = map(leftDistance, 255, 0, 255, 0);
   if (ld > 20) {
@@ -573,7 +568,7 @@ void detectMotion() {
   if ((dormant - time) < 6000 && powerSaverStopped == false) {
     launch("/Users/trace/Desktop/stopPowerSaver.app");
     powerSaverStopped = true;
-  } else if ((dormant - time) > 900000 && powerSaverStopped == true) { 
+  } else if ((dormant - time) > 100000 && powerSaverStopped == true) { 
     launch("/Users/trace/Desktop/startPowerSaver.app");
     powerSaverStopped = false;
   }
