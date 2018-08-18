@@ -568,7 +568,7 @@ void detectMotion() {
   if ((dormant - time) < 6000 && powerSaverStopped == false) {
     launch("/Users/trace/Desktop/stopPowerSaver.app");
     powerSaverStopped = true;
-  } else if ((dormant - time) > 100000 && powerSaverStopped == true) { 
+  } else if ((dormant - time) > 300000 && powerSaverStopped == true) { 
     launch("/Users/trace/Desktop/startPowerSaver.app");
     powerSaverStopped = false;
   }
