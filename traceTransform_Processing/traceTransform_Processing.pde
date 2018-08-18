@@ -164,6 +164,7 @@ void draw() {
     buttonCount = 6;
   }
 
+/*
   int x = 20;
   int y = 30;
   fill(255);
@@ -186,6 +187,7 @@ void draw() {
   text("Left Distance: " + leftDistance, x, y+240);
   text("Right Distance: " + rightDistance, x, y+255);
   text("Motion: " + motion, x, y+270);
+  */
 
   //println(leftButton, " | ", rightButton, " | ", pot1, " | ", pot2, " | ", pot3, " | ", pot4, " | ", pot5, " | ", pot6, " | ", pot7, " | ", pot8, " | ", pot9, " | ", xSlider, " | ", ySlider, " | ", ldr, " | ", red, " | ", green, " | ", blue, " | ", rgbButton, " | ", leftDistance, " | ", rightDistance, " | ", motion);
 
@@ -568,7 +570,7 @@ void detectMotion() {
   if ((dormant - time) < 6000 && powerSaverStopped == false) {
     launch("/Users/trace/Desktop/stopPowerSaver.app");
     powerSaverStopped = true;
-  } else if ((dormant - time) > 300000 && powerSaverStopped == true) { 
+  } else if ((dormant - time) > 100000 && powerSaverStopped == true) { 
     launch("/Users/trace/Desktop/startPowerSaver.app");
     powerSaverStopped = false;
   }

@@ -7,10 +7,10 @@ Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS3472
 const int leftButton = 0; 
 const int rightButton = 1; 
 const int motionSensor = 2;
-const int leftTrigger = 3;
-const int leftEcho = 4;
-const int rightTrigger = 5;
-const int rightEcho = 6;
+const int rightTrigger = 3;
+const int rightEcho = 4;
+const int leftTrigger = 5;
+const int leftEcho = 6;
 const int rgbActivate = 13;
 
 
