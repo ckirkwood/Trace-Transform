@@ -69,7 +69,7 @@ void loop() {
   tcs.getRawData(&red, &green, &blue, &clear);
   tcs.setInterrupt(true);  // turn off LED
   
-  // Calibrate values
+  // Calibrate colour values
   uint32_t sum = clear;
   float r, g, b;
   r = red; r /= sum;
