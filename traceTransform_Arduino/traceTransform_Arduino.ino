@@ -7,10 +7,11 @@ Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS3472
 const int leftButton = 0; 
 const int rightButton = 1; 
 const int motionSensor = 2;
-const int leftTrigger = 3;
-const int leftEcho = 4;
-const int rightTrigger = 5;
-const int rightEcho = 6;
+const int rightTrigger = 3;
+const int rightEcho = 4;
+const int leftTrigger = 5;
+const int leftEcho = 6;
+const int rgbActivate = 13;
 
 
 void setup() {
@@ -29,6 +30,7 @@ void setup() {
   pinMode(leftEcho, INPUT); 
   pinMode(rightTrigger, OUTPUT);
   pinMode(rightEcho, INPUT); 
+  pinMode(rgbActivate, INPUT_PULLUP);
 }
  
 
@@ -75,6 +77,9 @@ void loop() {
   b = blue; b /= sum;
   r *= 256; g *= 256; b *= 256;
 
+  int colourSwitch = rgbButton();
+
+ 
   Serial.print(leftB); Serial.print(",");
   Serial.print(rightB); Serial.print(",");
   Serial.print(pot1); Serial.print(",");
@@ -92,6 +97,7 @@ void loop() {
   Serial.print(round(r)); Serial.print(",");
   Serial.print(round(g)); Serial.print(",");
   Serial.print(round(b)); Serial.print(",");
+  Serial.print(colourSwitch); Serial.print(",");
   Serial.print(leftD); Serial.print(",");
   Serial.print(rightD); Serial.print(",");
   Serial.print(pir); Serial.print(", ");
@@ -174,6 +180,12 @@ int button1() {
 int button2() {
   int buttonState = 0;
   buttonState = digitalRead(rightButton);
+  return !buttonState;
+}
+
+int rgbButton() {
+  int buttonState = 0;
+  buttonState = digitalRead(rgbActivate);
   return !buttonState;
 }
 
